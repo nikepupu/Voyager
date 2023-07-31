@@ -291,6 +291,29 @@ class Voyager:
             if done:
                 break
         return messages, reward, done, info
+    
+    def start(self, reset_env=True):
+
+        if self.resume:
+            # keep the inventory
+            self.env.reset(
+                options={
+                    "mode": "soft",
+                    "wait_ticks": self.env_wait_ticks,
+                }
+            )
+        else:
+            # clear the inventory
+            self.env.reset(
+                options={
+                    "mode": "hard",
+                    "wait_ticks": self.env_wait_ticks,
+                }
+            )
+            self.resume = True
+        
+        self.last_events = self.env.step("")
+        
 
     def learn(self, reset_env=True):
         if self.resume:
@@ -310,7 +333,10 @@ class Voyager:
                 }
             )
             self.resume = True
+        
         self.last_events = self.env.step("")
+        
+        
 
         while True:
             if self.recorder.iteration > self.max_iterations:

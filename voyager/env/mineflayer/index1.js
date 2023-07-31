@@ -15,7 +15,7 @@ const OnSave = require("./lib/observation/onSave");
 const Chests = require("./lib/observation/chests");
 const { plugin: tool } = require("mineflayer-tool");
 
-let bot = null;
+let bot1 = null;
 
 const app = express();
 
@@ -23,129 +23,134 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 app.post("/start", (req, res) => {
-    if (bot) onDisconnect("Restarting bot");
-    bot = null;
-    console.log(req.body);
-    bot = mineflayer.createBot({
-        host: "localhost", // minecraft server ip
-        port: req.body.port, // minecraft server port
-        username: "bot" + PORT, // minecraft username
-        disableChatSigning: true,
-        checkTimeoutInterval: 60 * 60 * 1000,
-    });
-    bot.once("error", onConnectionFailed);
+    function setupbot(bot, index){
+        if (bot) onDisconnect("Restarting bot1");
+        bot = null;
+        console.log(req.body);
+        bot = mineflayer.createBot({
+            host: "localhost", // minecraft server ip
+            port: req.body.port, // minecraft server port
+            username: "bot"+index,
+            disableChatSigning: true,
+            checkTimeoutInterval: 60 * 60 * 1000,
+        });
+        bot.once("error", onConnectionFailed);
 
-    // Event subscriptions
-    bot.waitTicks = req.body.waitTicks;
-    bot.globalTickCounter = 0;
-    bot.stuckTickCounter = 0;
-    bot.stuckPosList = [];
-    bot.iron_pickaxe = false;
+        // Event subscriptions
+        bot.waitTicks = req.body.waitTicks;
+        bot.globalTickCounter = 0;
+        bot.stuckTickCounter = 0;
+        bot.stuckPosList = [];
+        bot.iron_pickaxe = false;
 
-    bot.on("kicked", onDisconnect);
+        bot.on("kicked", onDisconnect);
 
-    // mounting will cause physicsTick to stop
-    bot.on("mount", () => {
-        bot.dismount();
-    });
+        // mounting will cause physicsTick to stop
+        bot.on("mount", () => {
+            bot1.dismount();
+        });
 
-    bot.once("spawn", async () => {
-        bot.removeListener("error", onConnectionFailed);
-        let itemTicks = 1;
-        if (req.body.reset === "hard") {
-            bot.chat("/clear @s");
-            bot.chat("/kill @s");
-            const inventory = req.body.inventory ? req.body.inventory : {};
-            const equipment = req.body.equipment
-                ? req.body.equipment
-                : [null, null, null, null, null, null];
-            for (let key in inventory) {
-                bot.chat(`/give @s minecraft:${key} ${inventory[key]}`);
-                itemTicks += 1;
-            }
-            const equipmentNames = [
-                "armor.head",
-                "armor.chest",
-                "armor.legs",
-                "armor.feet",
-                "weapon.mainhand",
-                "weapon.offhand",
-            ];
-            for (let i = 0; i < 6; i++) {
-                if (i === 4) continue;
-                if (equipment[i]) {
-                    bot.chat(
-                        `/item replace entity @s ${equipmentNames[i]} with minecraft:${equipment[i]}`
-                    );
+        bot.once("spawn", async () => {
+            bot.removeListener("error", onConnectionFailed);
+            let itemTicks = 1;
+            if (req.body.reset === "hard") {
+                bot.chat("/clear @s");
+                bot.chat("/kill @s");
+                const inventory = req.body.inventory ? req.body.inventory : {};
+                const equipment = req.body.equipment
+                    ? req.body.equipment
+                    : [null, null, null, null, null, null];
+                for (let key in inventory) {
+                    bot.chat(`/give @s minecraft:${key} ${inventory[key]}`);
                     itemTicks += 1;
                 }
+                const equipmentNames = [
+                    "armor.head",
+                    "armor.chest",
+                    "armor.legs",
+                    "armor.feet",
+                    "weapon.mainhand",
+                    "weapon.offhand",
+                ];
+                for (let i = 0; i < 6; i++) {
+                    if (i === 4) continue;
+                    if (equipment[i]) {
+                        bot.chat(
+                            `/item replace entity @s ${equipmentNames[i]} with minecraft:${equipment[i]}`
+                        );
+                        itemTicks += 1;
+                    }
+                }
             }
-        }
 
-        if (req.body.position) {
-            bot.chat(
-                `/tp @s ${req.body.position.x} ${req.body.position.y} ${req.body.position.z}`
-            );
-        }
+            if (req.body.position) {
+                bot.chat(
+                    `/tp @s ${req.body.position.x} ${req.body.position.y} ${req.body.position.z}`
+                );
+            }
 
-        // if iron_pickaxe is in bot's inventory
-        if (
-            bot.inventory.items().find((item) => item.name === "iron_pickaxe")
-        ) {
-            bot.iron_pickaxe = true;
-        }
+            // if iron_pickaxe is in bot1's inventory
+            if (
+                bot.inventory.items().find((item) => item.name === "iron_pickaxe")
+            ) {
+                bot.iron_pickaxe = true;
+            }
 
-        const { pathfinder } = require("mineflayer-pathfinder");
-        const tool = require("mineflayer-tool").plugin;
-        const collectBlock = require("mineflayer-collectblock").plugin;
-        const pvp = require("mineflayer-pvp").plugin;
-        const minecraftHawkEye = require("minecrafthawkeye");
-        bot.loadPlugin(pathfinder);
-        bot.loadPlugin(tool);
-        bot.loadPlugin(collectBlock);
-        bot.loadPlugin(pvp);
-        bot.loadPlugin(minecraftHawkEye);
+            const { pathfinder } = require("mineflayer-pathfinder");
+            const tool = require("mineflayer-tool").plugin;
+            const collectBlock = require("mineflayer-collectblock").plugin;
+            const pvp = require("mineflayer-pvp").plugin;
+            const minecraftHawkEye = require("minecrafthawkeye");
+            bot.loadPlugin(pathfinder);
+            bot.loadPlugin(tool);
+            bot.loadPlugin(collectBlock);
+            bot.loadPlugin(pvp);
+            bot.loadPlugin(minecraftHawkEye);
 
-        // bot.collectBlock.movements.digCost = 0;
-        // bot.collectBlock.movements.placeCost = 0;
+            // bot1.collectBlock.movements.digCost = 0;
+            // bot1.collectBlock.movements.placeCost = 0;
 
-        obs.inject(bot, [
-            OnChat,
-            OnError,
-            Voxels,
-            Status,
-            Inventory,
-            OnSave,
-            Chests,
-            BlockRecords,
-        ]);
-        skills.inject(bot);
+            obs.inject(bot, [
+                OnChat,
+                OnError,
+                Voxels,
+                Status,
+                Inventory,
+                OnSave,
+                Chests,
+                BlockRecords,
+            ]);
+            skills.inject(bot);
 
-        if (req.body.spread) {
-            bot.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
-            await bot.waitForTicks(bot.waitTicks);
-        }
+            if (req.body.spread) {
+                bot.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
+                await bot.waitForTicks(bot.waitTicks);
+            }
 
-        await bot.waitForTicks(bot.waitTicks * itemTicks);
-        res.json(bot.observe());
+            await bot.waitForTicks(bot.waitTicks * itemTicks);
+            res.json(bot.observe());
 
-        initCounter(bot);
-        bot.chat("/gamerule keepInventory true");
-        bot.chat("/gamerule doDaylightCycle false");
-    });
+            initCounter(bot);
+            bot.chat("/gamerule keepInventory true");
+            bot.chat("/gamerule doDaylightCycle false");
+        });
+    }
+
+    setupbot(bot1, 1);
+    // setupbot(bot2, 2);
 
     function onConnectionFailed(e) {
         console.log(e);
-        bot = null;
+        bot1 = null;
         res.status(400).json({ error: e });
     }
     function onDisconnect(message) {
-        if (bot.viewer) {
-            bot.viewer.close();
+        if (bot1.viewer) {
+            bot1.viewer.close();
         }
-        bot.end();
+        bot1.end();
         console.log(message);
-        bot = null;
+        bot1 = null;
     }
 });
 
@@ -154,18 +159,18 @@ app.post("/step", async (req, res) => {
     let response_sent = false;
     function otherError(err) {
         console.log("Uncaught Error");
-        bot.emit("error", handleError(err));
-        bot.waitForTicks(bot.waitTicks).then(() => {
+        bot1.emit("error", handleError(err));
+        bot1.waitForTicks(bot1.waitTicks).then(() => {
             if (!response_sent) {
                 response_sent = true;
-                res.json(bot.observe());
+                res.json(bot1.observe());
             }
         });
     }
 
     process.on("uncaughtException", otherError);
 
-    const mcData = require("minecraft-data")(bot.version);
+    const mcData = require("minecraft-data")(bot1.version);
     mcData.itemsByName["leather_cap"] = mcData.itemsByName["leather_helmet"];
     mcData.itemsByName["leather_tunic"] =
         mcData.itemsByName["leather_chestplate"];
@@ -204,25 +209,25 @@ app.post("/step", async (req, res) => {
     const { Vec3 } = require("vec3");
 
     // Set up pathfinder
-    const movements = new Movements(bot, mcData);
-    bot.pathfinder.setMovements(movements);
+    const movements = new Movements(bot1, mcData);
+    bot1.pathfinder.setMovements(movements);
 
-    bot.globalTickCounter = 0;
-    bot.stuckTickCounter = 0;
-    bot.stuckPosList = [];
+    bot1.globalTickCounter = 0;
+    bot1.stuckTickCounter = 0;
+    bot1.stuckPosList = [];
 
     function onTick() {
-        bot.globalTickCounter++;
-        if (bot.pathfinder.isMoving()) {
-            bot.stuckTickCounter++;
-            if (bot.stuckTickCounter >= 100) {
+        bot1.globalTickCounter++;
+        if (bot1.pathfinder.isMoving()) {
+            bot1.stuckTickCounter++;
+            if (bot1.stuckTickCounter >= 100) {
                 onStuck(1.5);
-                bot.stuckTickCounter = 0;
+                bot1.stuckTickCounter = 0;
             }
         }
     }
 
-    bot.on("physicTick", onTick);
+    bot1.on("physicTick", onTick);
 
     // initialize fail count
     let _craftItemFailCount = 0;
@@ -234,24 +239,24 @@ app.post("/step", async (req, res) => {
     // Retrieve array form post bod
     const code = req.body.code;
     const programs = req.body.programs;
-    bot.cumulativeObs = [];
-    await bot.waitForTicks(bot.waitTicks);
+    bot1.cumulativeObs = [];
+    await bot1.waitForTicks(bot1.waitTicks);
     const r = await evaluateCode(code, programs);
     process.off("uncaughtException", otherError);
     if (r !== "success") {
-        bot.emit("error", handleError(r));
+        bot1.emit("error", handleError(r));
     }
     await returnItems();
     // wait for last message
-    await bot.waitForTicks(bot.waitTicks);
+    await bot1.waitForTicks(bot1.waitTicks);
     if (!response_sent) {
         response_sent = true;
-        res.json(bot.observe());
+        res.json(bot1.observe());
     }
-    bot.removeListener("physicTick", onTick);
+    bot1.removeListener("physicTick", onTick);
 
     async function evaluateCode(code, programs) {
-        // Echo the code produced for players to see it. Don't echo when the bot code is already producing dialog or it will double echo
+        // Echo the code produced for players to see it. Don't echo when the bot1 code is already producing dialog or it will double echo
         try {
             await eval("(async () => {" + programs + "\n" + code + "})()");
             return "success";
@@ -261,12 +266,12 @@ app.post("/step", async (req, res) => {
     }
 
     function onStuck(posThreshold) {
-        const currentPos = bot.entity.position;
-        bot.stuckPosList.push(currentPos);
+        const currentPos = bot1.entity.position;
+        bot1.stuckPosList.push(currentPos);
 
         // Check if the list is full
-        if (bot.stuckPosList.length === 5) {
-            const oldestPos = bot.stuckPosList[0];
+        if (bot1.stuckPosList.length === 5) {
+            const oldestPos = bot1.stuckPosList[0];
             const posDifference = currentPos.distanceTo(oldestPos);
 
             if (posDifference < posThreshold) {
@@ -274,12 +279,12 @@ app.post("/step", async (req, res) => {
             }
 
             // Remove the oldest time from the list
-            bot.stuckPosList.shift();
+            bot1.stuckPosList.shift();
         }
     }
 
     function teleportBot() {
-        const blocks = bot.findBlocks({
+        const blocks = bot1.findBlocks({
             matching: (block) => {
                 return block.type === 0;
             },
@@ -291,48 +296,48 @@ app.post("/step", async (req, res) => {
             // console.log(blocks.length);
             const randomIndex = Math.floor(Math.random() * blocks.length);
             const block = blocks[randomIndex];
-            bot.chat(`/tp @s ${block.x} ${block.y} ${block.z}`);
+            bot1.chat(`/tp @s ${block.x} ${block.y} ${block.z}`);
         } else {
-            bot.chat("/tp @s ~ ~1.25 ~");
+            bot1.chat("/tp @s ~ ~1.25 ~");
         }
     }
 
     function returnItems() {
-        bot.chat("/gamerule doTileDrops false");
-        const crafting_table = bot.findBlock({
+        bot1.chat("/gamerule doTileDrops false");
+        const crafting_table = bot1.findBlock({
             matching: mcData.blocksByName.crafting_table.id,
             maxDistance: 128,
         });
         if (crafting_table) {
-            bot.chat(
+            bot1.chat(
                 `/setblock ${crafting_table.position.x} ${crafting_table.position.y} ${crafting_table.position.z} air destroy`
             );
-            bot.chat("/give @s crafting_table");
+            bot1.chat("/give @s crafting_table");
         }
-        const furnace = bot.findBlock({
+        const furnace = bot1.findBlock({
             matching: mcData.blocksByName.furnace.id,
             maxDistance: 128,
         });
         if (furnace) {
-            bot.chat(
+            bot1.chat(
                 `/setblock ${furnace.position.x} ${furnace.position.y} ${furnace.position.z} air destroy`
             );
-            bot.chat("/give @s furnace");
+            bot1.chat("/give @s furnace");
         }
-        if (bot.inventoryUsed() >= 32) {
-            // if chest is not in bot's inventory
-            if (!bot.inventory.items().find((item) => item.name === "chest")) {
-                bot.chat("/give @s chest");
+        if (bot1.inventoryUsed() >= 32) {
+            // if chest is not in bot1's inventory
+            if (!bot1.inventory.items().find((item) => item.name === "chest")) {
+                bot1.chat("/give @s chest");
             }
         }
-        // if iron_pickaxe not in bot's inventory and bot.iron_pickaxe
+        // if iron_pickaxe not in bot1's inventory and bot1.iron_pickaxe
         if (
-            bot.iron_pickaxe &&
-            !bot.inventory.items().find((item) => item.name === "iron_pickaxe")
+            bot1.iron_pickaxe &&
+            !bot1.inventory.items().find((item) => item.name === "iron_pickaxe")
         ) {
-            bot.chat("/give @s iron_pickaxe");
+            bot1.chat("/give @s iron_pickaxe");
         }
-        bot.chat("/gamerule doTileDrops true");
+        bot1.chat("/gamerule doTileDrops true");
     }
 
     function handleError(err) {
@@ -399,19 +404,19 @@ app.post("/step", async (req, res) => {
 });
 
 app.post("/stop", (req, res) => {
-    bot.end();
+    bot1.end();
     res.json({
-        message: "Bot stopped",
+        message: "bot1 stopped",
     });
 });
 
 app.post("/pause", (req, res) => {
-    if (!bot) {
-        res.status(400).json({ error: "Bot not spawned" });
+    if (!bot1) {
+        res.status(400).json({ error: "bot1 not spawned" });
         return;
     }
-    bot.chat("/pause");
-    bot.waitForTicks(bot.waitTicks).then(() => {
+    bot1.chat("/pause");
+    bot1.waitForTicks(bot1.waitTicks).then(() => {
         res.json({ message: "Success" });
     });
 });

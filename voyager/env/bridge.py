@@ -50,6 +50,7 @@ class VoyagerEnv(gym.Env):
     def get_mineflayer_process(self, server_port):
         U.f_mkdir(self.log_path, "mineflayer")
         file_path = os.path.abspath(os.path.dirname(__file__))
+        print("server port debug: ", server_port)
         return SubprocessMonitor(
             commands=[
                 "node",
