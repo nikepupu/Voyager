@@ -199,6 +199,18 @@ class Voyager:
 
     def close(self):
         self.env.close()
+    
+    def step_manuual(self, code):
+        events = self.env.step(
+            code = code,
+            programs=self.skill_manager.programs,
+        )
+        
+        self.action_agent.update_chest_memory(events[-1][1]["nearbyChests"])
+        
+        self.last_events = copy.deepcopy(events)
+        
+        return self.last_events
 
     def step(self):
         if self.action_agent_rollout_num_iter < 0:
@@ -292,7 +304,7 @@ class Voyager:
                 break
         return messages, reward, done, info
     
-    def start(self, position, reset_env=True ):
+    def start(self, position=None, reset_env=True ):
 
         if self.resume:
             # keep the inventory

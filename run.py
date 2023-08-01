@@ -8,91 +8,87 @@ voyager1 = Voyager(
     mc_port=port,
     openai_api_key=openai_api_key,
     server_port=3000,
-    env_wait_ticks=40,
+    env_wait_ticks=100,
 )
 
 
 
-voyager1.start(position={'x': 212, 'y': 70, 'z': 707})
-# voyager1.env.unpause()
-print('voyager1 started')
-# voyager2 = Voyager(
-#     mc_port=port,
-#     openai_api_key=openai_api_key,
-#     server_port=3001
-# )
+voyager1.start()
+data = voyager1.step_manuual(code = "await bot.chat('/tp @s 131 78 702'); "  )
+voyager1.env.unpause()
 
+print('voyager1 started')
+voyager2 = Voyager(
+    mc_port=port,
+    openai_api_key=openai_api_key,
+    server_port=3001
+)
+voyager2.start()
+voyager1.env.set_server_state(server_paused=True)
+
+data = voyager2.step_manuual(code = "await bot.chat('/tp @s 140 78 702'); "  )
 # voyager2.start(position={'x': -35, 'y': 72, 'z': 498})
 # voyager2.env.unpause()
 # print('voyager2 started')
 # print(voyager1.last_events)
 # print('=====')
 # print(voyager2.last_events)
-found = False
-foundItem = None
+found = [False, False]
 while True:
-    data = voyager1.env.step(code = """exploreUntil(bot, new Vec3(1, 0, 1), 10,
-                             () => {
-                                const oak_logs = bot.findBlocks({
-                                matching: block => block.name === `oak_log`,
-                                maxDistance: 32,
-                                count: 2
-                                });
-                                return oak_logs.length >= 2 ? oak_logs : null;
-                            });""", 
-                         programs=voyager1.skill_manager.programs)
-    print('data: ', data)
-    print('voxels', data[0][1]['voxels'])
-    
-    for item in data[0][1]['voxels']:
-        if 'oak_log' == item:
-            found = True
-            foundItem = item
-            break
-    if found:
+    if not found[0]:
+        data = voyager1.step_manuual(code =
+                                    """await exploreUntil(bot, new Vec3(1, 0, 1), 10,
+                                () => {
+                                    const oak_logs = bot.findBlocks({
+                                    matching: block => block.name === `oak_log`,
+                                    maxDistance: 32,
+                                    count: 1
+                                    });
+                                    return oak_logs.length >= 1 ? oak_logs : null;
+                                });""")
+        
+        for item in data[0][1]['voxels']:
+            if 'oak_log' == item:
+                found[0] = True
+                foundItem = item
+                break
+    if not found[1]:
+        data = voyager2.step_manuual(code =
+                                    """await exploreUntil(bot, new Vec3(1, 0, 1), 10,
+                                () => {
+                                    const oak_logs = bot.findBlocks({
+                                    matching: block => block.name === `oak_log`,
+                                    maxDistance: 32,
+                                    count: 1
+                                    });
+                                    return oak_logs.length >= 1 ? oak_logs : null;
+                                });""")
+        
+        for item in data[0][1]['voxels']:
+            if 'oak_log' == item:
+                found[1] = True
+                break
+    if sum(found) == 2:
         break
-
-x = voyager1.last_events[-1][1]['status']['position']['x']
-y = voyager1.last_events[-1][1]['status']['position']['y']
-z = voyager1.last_events[-1][1]['status']['position']['z']
-
+               
 # data = voyager2.env.step(code = f"bot.chat('/tp @s {x+5} {y+3} {z+5}') ")
 # print('tp result: ', data)
-data = voyager1.env.step(code = """ 
-    async function mineWoodLog(bot) {
-    const woodLogNames = ["oak_log", "birch_log", "spruce_log", "jungle_log", "acacia_log", "dark_oak_log", "mangrove_log"];
-
-    // Find a wood log block
-    const woodLogBlock = await exploreUntil(bot, new Vec3(1, 0, 1), 60, () => {
-        return bot.findBlock({
-        matching: block => woodLogNames.includes(block.name),
-        maxDistance: 32
-        });
-    });
-    if (!woodLogBlock) {
-        bot.chat("Could not find a wood log.");
-        return;
-    }
-
-    // Mine the wood log block
-    await mineBlock(bot, woodLogBlock.name, 1);
-    bot.chat("Wood log mined.");
-    }
+data = voyager1.step_manuual(code = """ 
                          
-    await mineWoodLog(bot);
+    await mineBlock(bot, 'oak_log', 1);
 
- """, 
-                         programs=voyager1.skill_manager.programs)
+ """)
 # print(voyager1.last_events)
 print('voyager 1 data', data)
+data = voyager2.step_manuual(code = """ 
+    await mineBlock(bot, 'oak_log', 1);
+ """)
 
-# data = voyager2.env.step(code = f"await mineBlock(bot, '{foundItem}', 1);", 
-#                          programs=voyager2.skill_manager.programs)
-# print('voyager 2 data', data)
-# /home/nikepupu/project_micorsoft/Voyager/run.py
 print(voyager1.last_events)
 # print(voyager2.last_events)
 print('done')
+print(voyager1.last_events[-1][1]["inventory"])
+print(voyager2.last_events[-1][1]["inventory"])
 while True:
     continue
 

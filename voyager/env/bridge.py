@@ -188,3 +188,5 @@ class VoyagerEnv(gym.Env):
             else:
                 print(res.json())
         return self.server_paused
+    def set_server_state(self, server_paused):
+        self.server_paused = server_paused
