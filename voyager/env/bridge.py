@@ -139,7 +139,7 @@ class VoyagerEnv(gym.Env):
 
         if options.get("inventory", {}) and options.get("mode", "hard") != "hard":
             raise RuntimeError("inventory can only be set when options is hard")
-
+        print('position: ', options.get("position", None))
         self.reset_options = {
             "port": self.mc_port,
             "reset": options.get("mode", "hard"),

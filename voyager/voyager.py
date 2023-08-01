@@ -292,7 +292,7 @@ class Voyager:
                 break
         return messages, reward, done, info
     
-    def start(self, reset_env=True):
+    def start(self, position, reset_env=True ):
 
         if self.resume:
             # keep the inventory
@@ -300,6 +300,7 @@ class Voyager:
                 options={
                     "mode": "soft",
                     "wait_ticks": self.env_wait_ticks,
+                    "position": position
                 }
             )
         else:
@@ -308,6 +309,7 @@ class Voyager:
                 options={
                     "mode": "hard",
                     "wait_ticks": self.env_wait_ticks,
+                    "position": position
                 }
             )
             self.resume = True

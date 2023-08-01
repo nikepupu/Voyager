@@ -1,0 +1,21 @@
+## action space
+
+# explore 2seconds
+const exploreUntil(bot, new Vec3(1, 0, 1), 1);
+
+#  mine block
+function mineBlock(bot, name, count = 1);
+
+# teleport to agent1
+
+# teleport to agent2
+
+
+## observation space:
+
+inventory bot1; 
+surrounding bot1;
+
+inventory bot2;
+surrounding bot2;
+
