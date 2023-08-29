@@ -123,7 +123,10 @@ class VoyagerEnv(gym.Env):
             raise RuntimeError("Failed to step Minecraft server")
         returned_data = res.json()
         self.pause()
-        return json.loads(returned_data)
+        returned = {}
+        for key, value in returned_data.items():
+            returned[key] = json.loads(value)
+        return returned
 
     def render(self):
         raise NotImplementedError("render is not implemented")
@@ -160,7 +163,10 @@ class VoyagerEnv(gym.Env):
         # All the reset in step will be soft
         self.reset_options["reset"] = "soft"
         self.pause()
-        return json.loads(returned_data)
+        returned = {}
+        for key, value in returned_data.items():
+            returned[key] = json.loads(value)
+        return returned
 
     def close(self):
         self.unpause()

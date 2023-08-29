@@ -206,8 +206,6 @@ class Voyager:
             programs=self.skill_manager.programs,
         )
         
-        self.action_agent.update_chest_memory(events[-1][1]["nearbyChests"])
-        
         self.last_events = copy.deepcopy(events)
         
         return self.last_events

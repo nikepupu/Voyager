@@ -14,14 +14,16 @@ voyager1 = Voyager(
 
 
 voyager1.start()
+#  await bot1.chat('/tp @s 0 -60 0');
 data = voyager1.step_manuual(code = """ 
+                             await bot1.chat('/tp @s -10 -60 -10');
+                             await bot2.chat('/tp @s -10 -60 10');
                              await bot1.chat('/fill -40 -60 -40 40 -60 40 minecraft:air');
                              await bot1.chat('/kill @e[type=!player]');
                              await bot1.chat('/kill @e[type=item]');
-                             await bot1.chat('/tp @s 0 -60 0');
-                             await bot1.chat('/summon sheep -5 -60 -5 {NoAI:1}');
-                             await bot1.chat('/summon chicken -3 -60 -3 {NoAI:1}');
-                             await bot1.chat('/setblock 2 -60 2 minecraft:oak_log');
+                             await bot1.chat('/summon sheep -5 -60 -10 {NoAI:1}');
+                             await bot1.chat('/summon chicken -3 -60 -10 {NoAI:1}');
+                             await bot1.chat('/setblock 2 -60 4 minecraft:oak_log');
                              await bot1.chat('/setblock 2 -60 -2 minecraft:furnace');
                               """  )
 
@@ -34,9 +36,21 @@ data = voyager1.step_manuual(code = """
 # data = voyager1.step_manuual(code = """
 #     await mineBlock(bot, 'oak_log', 1);
 #  """)
-# data = voyager1.step_manuual(code = """ 
-#    await goto(bot, 'sheep');
-# """)
+data = voyager1.step_manuual(code = """ 
+   await Promise.all([goto(bot1, 'oak_log'), goto(bot2, 'sheep')])            
+""")
+                             
+data = voyager1.step_manuual(code = """ 
+   await Promise.all([mineBlock(bot1, 'oak_log', 1), killMob(bot2, 'sheep', 300)])            
+""")
+
+data = voyager1.step_manuual(code = """ 
+   await Promise.all([goto(bot1, 'furnace'), goto(bot2, 'furnace')])            
+""")
+
+data = voyager1.step_manuual(code = """ 
+   await Promise.all([putFuelFurnance(bot1, 'oak_log'), putItemFurnance(bot2, 'mutton')])            
+""")
                              
 # data = voyager1.step_manuual(code = """ 
 #    await goto(bot, 'furnace');

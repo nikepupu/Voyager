@@ -12,11 +12,11 @@ async function mineBlock(bot, name, count = 1) {
     }
     const blocks = bot.findBlocks({
         matching: [blockByName.id],
-        maxDistance: 32,
+        maxDistance: 4,
         count: 1024,
     });
     if (blocks.length === 0) {
-        bot.chat(`No ${name} nearby, please explore first`);
+        bot.chat(`No ${name} nearby, please go there first`);
         _mineBlockFailCount++;
         if (_mineBlockFailCount > 10) {
             throw new Error(

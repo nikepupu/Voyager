@@ -34,7 +34,17 @@ app.post("/start", (req, res) => {
         disableChatSigning: true,
         checkTimeoutInterval: 60 * 60 * 1000,
     });
+
+    bot2 = mineflayer.createBot({
+        host: "localhost", // minecraft server ip
+        port: req.body.port, // minecraft server port
+        username: "bot" + PORT+2, // minecraft username
+        disableChatSigning: true,
+        checkTimeoutInterval: 60 * 60 * 1000,
+    });
+
     bot1.once("error", onConnectionFailed);
+    bot2.once("error", onConnectionFailed);
 
     // Event subscriptions
     bot1.waitTicks = req.body.waitTicks;
@@ -42,46 +52,49 @@ app.post("/start", (req, res) => {
     bot1.stuckTickCounter = 0;
     bot1.stuckPosList = [];
     bot1.iron_pickaxe = false;
-
     bot1.on("kicked", onDisconnect);
+
+    bot2.waitTicks = req.body.waitTicks;
+    bot2.globalTickCounter = 0;
+    bot2.stuckTickCounter = 0;
+    bot2.stuckPosList = [];
+    bot2.iron_pickaxe = false;
+    bot2.on("kicked", onDisconnect);
 
     // mounting will cause physicsTick to stop
     bot1.on("mount", () => {
         bot1.dismount();
     });
 
+    bot2.on("mount", () => {
+        bot2.dismount();
+    });
+
     bot1.once("spawn", async () => {
         bot1.removeListener("error", onConnectionFailed);
         let itemTicks = 1;
-        if (req.body.reset === "hard") {
-            bot1.chat("/clear @s");
-            bot1.chat("/kill @s");
-            const inventory = req.body.inventory ? req.body.inventory : {};
-            const equipment = req.body.equipment
-                ? req.body.equipment
-                : [null, null, null, null, null, null];
-            for (let key in inventory) {
-                bot1.chat(`/give @s minecraft:${key} ${inventory[key]}`);
-                itemTicks += 1;
-            }
-            const equipmentNames = [
-                "armor.head",
-                "armor.chest",
-                "armor.legs",
-                "armor.feet",
-                "weapon.mainhand",
-                "weapon.offhand",
-            ];
-            for (let i = 0; i < 6; i++) {
-                if (i === 4) continue;
-                if (equipment[i]) {
-                    bot1.chat(
-                        `/item replace entity @s ${equipmentNames[i]} with minecraft:${equipment[i]}`
-                    );
-                    itemTicks += 1;
-                }
+        
+        bot1.chat("/clear @s");
+        bot1.chat("/kill @s");
+ 
+
+        
+        let inventory = bot1.inventory.slots;
+
+        for (let slot of inventory) {
+            if (slot) {
+                bot1.tossStack(slot);
             }
         }
+
+        inventory = bot2.inventory.slots;
+        for (let slot of inventory) {
+            if (slot) {
+                bot1.tossStack(slot);
+            }
+        }
+        
+        
 
         const { pathfinder } = require("mineflayer-pathfinder");
         const tool = require("mineflayer-tool").plugin;
@@ -111,20 +124,99 @@ app.post("/start", (req, res) => {
 
         if (req.body.spread) {
             bot1.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
-            await bot.waitForTicks(bot1.waitTicks);
+            await bot1.waitForTicks(bot1.waitTicks);
         }
 
         await bot1.waitForTicks(bot1.waitTicks * itemTicks);
-        res.json(bot1.observe());
+        
 
         initCounter(bot1);
-        bot1.chat("/gamerule keepInventory true");
-        bot1.chat("/gamerule doDaylightCycle false");
+
+        bot2.loadPlugin(pathfinder);
+        bot2.loadPlugin(tool);
+        bot2.loadPlugin(collectBlock);
+        bot2.loadPlugin(pvp);
+        bot2.loadPlugin(minecraftHawkEye);
+
+        // bot.collectBlock.movements.digCost = 0;
+        // bot.collectBlock.movements.placeCost = 0;
+
+        obs.inject(bot2, [
+            OnChat,
+            OnError,
+            Voxels,
+            Status,
+            Inventory,
+            OnSave,
+            Chests,
+            BlockRecords,
+        ]);
+        skills.inject(bot2);
+
+        bot1.unequip()
+
+        if (req.body.spread) {
+            bot2.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
+            await bot2.waitForTicks(bot2.waitTicks);
+        }
+
+        await bot2.waitForTicks(bot2.waitTicks * itemTicks);
+        // return_data = str([bot1.observe(), bot2.observe()])
+        bot1.unequip();
+        bot2.unequip();
+        res.json({bot1: bot1.observe(), bot2: bot2.observe()});
+
+        // bot1.chat("/gamerule keepInventory true");
+        // bot1.chat("/gamerule doDaylightCycle false");
     });
+
+
+    // bot2.once("spawn", async () => {
+    //     // bot2.removeListener("error", onConnectionFailed);
+
+    //     const { pathfinder } = require("mineflayer-pathfinder");
+    //     const tool = require("mineflayer-tool").plugin;
+    //     const collectBlock = require("mineflayer-collectblock").plugin;
+    //     const pvp = require("mineflayer-pvp").plugin;
+    //     const minecraftHawkEye = require("minecrafthawkeye");
+    //     bot2.loadPlugin(pathfinder);
+    //     bot2.loadPlugin(tool);
+    //     bot2.loadPlugin(collectBlock);
+    //     bot2.loadPlugin(pvp);
+    //     bot2.loadPlugin(minecraftHawkEye);
+
+    //     // bot.collectBlock.movements.digCost = 0;
+    //     // bot.collectBlock.movements.placeCost = 0;
+
+    //     obs.inject(bot2, [
+    //         OnChat,
+    //         OnError,
+    //         Voxels,
+    //         Status,
+    //         Inventory,
+    //         OnSave,
+    //         Chests,
+    //         BlockRecords,
+    //     ]);
+    //     skills.inject(bot2);
+
+    //     if (req.body.spread) {
+    //         bot2.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
+    //         await bot2.waitForTicks(bot2.waitTicks);
+    //     }
+
+    //     await bot2.waitForTicks(bot2.waitTicks * itemTicks);
+    //     res.json(bot2.observe());
+
+    //     initCounter(bot2);
+    //     bot2.chat("/gamerule keepInventory true");
+    //     bot2.chat("/gamerule doDaylightCycle false");
+    // });
 
     function onConnectionFailed(e) {
         console.log(e);
         bot1 = null;
+        bot2 = null;
         res.status(400).json({ error: e });
     }
     function onDisconnect(message) {
@@ -134,6 +226,13 @@ app.post("/start", (req, res) => {
         bot1.end();
         console.log(message);
         bot1 = null;
+
+        if (bot2.viewer) {
+            bot2.viewer.close();
+        }
+        bot2.end();
+        console.log(message);
+        bot2 = null;
     }
 });
 
@@ -146,7 +245,7 @@ app.post("/step", async (req, res) => {
         bot1.waitForTicks(bot1.waitTicks).then(() => {
             if (!response_sent) {
                 response_sent = true;
-                res.json(bot1.observe());
+                res.json({bot1: bot1.observe(), bot2: bot2.observe()});
             }
         });
     }
@@ -210,8 +309,19 @@ app.post("/step", async (req, res) => {
         }
     }
 
-    bot1.on("physicTick", onTick);
+    // function onTick2() {
+    //     bot2.globalTickCounter++;
+    //     if (bot2.pathfinder.isMoving()) {
+    //         bot2.stuckTickCounter++;
+    //         if (bot2.stuckTickCounter >= 100) {
+    //             onStuck2(1.5);
+    //             bot2.stuckTickCounter = 0;
+    //         }
+    //     }
+    // }
 
+    bot1.on("physicTick", onTick);
+    // bot2.on("physicTick", onTick2);
     // initialize fail count
     let _craftItemFailCount = 0;
     let _killMobFailCount = 0;
@@ -234,9 +344,10 @@ app.post("/step", async (req, res) => {
     await bot1.waitForTicks(bot1.waitTicks);
     if (!response_sent) {
         response_sent = true;
-        res.json(bot1.observe());
+        res.json({bot1: bot1.observe(), bot2: bot2.observe()});
     }
     bot1.removeListener("physicTick", onTick);
+    // bot2.removeListener("physicTick", onTick2);
 
     async function evaluateCode(code, programs) {
         // Echo the code produced for players to see it. Don't echo when the bot code is already producing dialog or it will double echo
@@ -265,6 +376,23 @@ app.post("/step", async (req, res) => {
             bot1.stuckPosList.shift();
         }
     }
+    // function onStuck2(posThreshold) {
+    //     const currentPos = bot2.entity.position;
+    //     bot2.stuckPosList.push(currentPos);
+
+    //     // Check if the list is full
+    //     if (bot2.stuckPosList.length === 5) {
+    //         const oldestPos = bot2.stuckPosList[0];
+    //         const posDifference = currentPos.distanceTo(oldestPos);
+
+    //         if (posDifference < posThreshold) {
+    //             teleportBot2(); // execute the function
+    //         }
+
+    //         // Remove the oldest time from the list
+    //         bot2.stuckPosList.shift();
+    //     }
+    // }
 
     function teleportBot() {
         const blocks = bot1.findBlocks({
@@ -284,6 +412,25 @@ app.post("/step", async (req, res) => {
             bot1.chat("/tp @s ~ ~1.25 ~");
         }
     }
+
+    // function teleportBot2() {
+    //     const blocks = bot2.findBlocks({
+    //         matching: (block) => {
+    //             return block.type === 0;
+    //         },
+    //         maxDistance: 1,
+    //         count: 27,
+    //     });
+
+    //     if (blocks) {
+    //         // console.log(blocks.length);
+    //         const randomIndex = Math.floor(Math.random() * blocks.length);
+    //         const block = blocks[randomIndex];
+    //         bot2.chat(`/tp @s ${block.x} ${block.y} ${block.z}`);
+    //     } else {
+    //         bot2.chat("/tp @s ~ ~1.25 ~");
+    //     }
+    // }
 
     function handleError(err) {
         let stack = err.stack;
@@ -346,10 +493,12 @@ app.post("/step", async (req, res) => {
         }
         return err.message;
     }
+    
 });
 
 app.post("/stop", (req, res) => {
     bot1.end();
+    bot2.end();
     res.json({
         message: "Bot stopped",
     });
