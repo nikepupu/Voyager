@@ -241,7 +241,7 @@ app.post("/step", async (req, res) => {
     if (r !== "success") {
         bot.emit("error", handleError(r));
     }
-    await returnItems();
+    // await returnItems();
     // wait for last message
     await bot.waitForTicks(bot.waitTicks);
     if (!response_sent) {

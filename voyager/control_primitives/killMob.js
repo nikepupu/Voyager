@@ -22,8 +22,7 @@ async function killMob(bot, mobName, timeout = 300) {
     const entity = bot.nearestEntity(
         (entity) =>
             entity.name === mobName &&
-            // kill mob distance should be slightly bigger than explore distance
-            entity.position.distanceTo(bot.entity.position) < 48
+            entity.position.distanceTo(bot.entity.position) < 2
     );
     if (!entity) {
         bot.chat(`No ${mobName} nearby, please explore first`);

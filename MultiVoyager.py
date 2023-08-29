@@ -8,7 +8,6 @@ class MultiVoyager():
         self.mc_port = mc_port
         self.agents = []
         assert len(init_positions) == num_agents
-
         for i in range(num_agents):
             agent = Voyager(
                 mc_port=mc_port,
@@ -18,7 +17,7 @@ class MultiVoyager():
                 )
             self.agents.append(agent)
             agent.start()
-            agent.step_manuual(code = f"await bot.chat('/tp @s {init_positions[i]['x']} {init_positions[i]['y']} {init_positions[i]['z']} '); "  )
+            agent.step_manuual(code = f"await bot.chat('/tp @s {init_positions[i]}'); "  )
             if i < num_agents - 1:
                 agent.env.unpause()
         
@@ -53,18 +52,7 @@ class MultiVoyager():
             goto-agent0-agent1
             mine-agent0-oak_log
         """
-
-        if predicate == 'explore':
-            code = """await exploreUntil(bot, new Vec3(1, 0, 1), 10,
-                                () => {
-                                    const items = bot.findBlocks({
-                                    matching: block => block.name === `{item}`,
-                                    maxDistance: 32,
-                                    count: 1
-                                    });
-                                    return items.length >= 1 ? items : null;
-                                });""".format(arg[1])
-        elif predicate == 'noop':
+        if predicate == 'noop':
             code = ""
         elif predicate == 'goto':
             code = """await bot.chat('/tp @s {botname}');""".format( "bot"+str( int(arg[1][-1])+3000) )
@@ -162,3 +150,5 @@ class MultiVoyager():
 
         return True, predicates, args, ignored_actions
 
+if __name__ == '__main__':
+    env = MultiVoyager(40463, 1, 'sk-x', ['0 -60 0'])
