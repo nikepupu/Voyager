@@ -15,14 +15,14 @@ voyager1 = Voyager(
 
 voyager1.start()
 data = voyager1.step_manuual(code = """ 
-                             await bot.chat('/fill -40 -60 -40 40 -60 40 minecraft:air');
-                             await bot.chat('/kill @e[type=!player]');
-                             await bot.chat('/kill @e[type=item]');
-                             await bot.chat('/tp @s 0 -60 0');
-                             await bot.chat('/summon sheep -5 -60 -5 {NoAI:1}');
-                             await bot.chat('/summon chicken -3 -60 -3 {NoAI:1}');
-                             await bot.chat('/setblock 2 -60 2 minecraft:oak_log');
-                             await bot.chat('/setblock 2 -60 -2 minecraft:furnace');
+                             await bot1.chat('/fill -40 -60 -40 40 -60 40 minecraft:air');
+                             await bot1.chat('/kill @e[type=!player]');
+                             await bot1.chat('/kill @e[type=item]');
+                             await bot1.chat('/tp @s 0 -60 0');
+                             await bot1.chat('/summon sheep -5 -60 -5 {NoAI:1}');
+                             await bot1.chat('/summon chicken -3 -60 -3 {NoAI:1}');
+                             await bot1.chat('/setblock 2 -60 2 minecraft:oak_log');
+                             await bot1.chat('/setblock 2 -60 -2 minecraft:furnace');
                               """  )
 
 # voyager1.env.unpause()
