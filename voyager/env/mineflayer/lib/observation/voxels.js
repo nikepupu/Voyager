@@ -8,7 +8,7 @@ class Voxels extends Observation {
     }
 
     observe() {
-        return Array.from(getSurroundingBlocks(this.bot, 8, 2, 8));
+        return Array.from(getSurroundingBlocks(this.bot, 32, 4, 32));
     }
 }
 
@@ -22,7 +22,7 @@ class BlockRecords extends Observation {
             this.tick++;
             if (this.tick >= 100) {
                 const items = getInventoryItems(this.bot);
-                getSurroundingBlocks(this.bot, 8, 2, 8).forEach((block) => {
+                getSurroundingBlocks(this.bot, 32, 4, 32).forEach((block) => {
                     if (!items.has(block)) this.records.add(block);
                 });
                 this.tick = 0;
@@ -47,7 +47,12 @@ function getSurroundingBlocks(bot, x_distance, y_distance, z_distance) {
             for (let z = -z_distance; z <= z_distance; z++) {
                 const block = bot.blockAt(bot.entity.position.offset(x, y, z));
                 if (block && block.type !== 0) {
-                    surroundingBlocks.add(block.name);
+                    if (['grass_block', 'dirt', 'bedrock'].includes(block.name)) { 
+                        surroundingBlocks.add(block.name);
+                    }
+                    else{
+                        surroundingBlocks.add([block.name, x ,y ,z]);
+                    }
                 }
             }
         }

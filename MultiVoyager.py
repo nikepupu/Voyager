@@ -4,36 +4,51 @@ import time
 
 
 class MultiVoyager():
-    def __init__(self, mc_port, num_agents, openai_api_key, init_positions) -> None:
+    def __init__(self, mc_port, openai_api_key) -> None:
         self.mc_port = mc_port
         self.agents = []
-        assert len(init_positions) == num_agents
-        for i in range(num_agents):
-            agent = Voyager(
-                mc_port=mc_port,
-                openai_api_key=openai_api_key,
-                server_port=3000+i,
-                env_wait_ticks=100,
-                )
-            self.agents.append(agent)
-            agent.start()
-            agent.step_manuual(code = f"await bot.chat('/tp @s {init_positions[i]}'); "  )
-            if i < num_agents - 1:
-                agent.env.unpause()
+        openai_api_key = "sk-xxx"
+        port = 44401
+        self.env = Voyager(
+            mc_port=port,
+            openai_api_key=openai_api_key,
+            server_port=3000,
+            env_wait_ticks=20,
+        )
+        self.env.start()
         
-        for i in range(num_agents):
-            self.agents[i].env.set_server_state(server_paused=True)
-        
+        self._last_event = self.env.step_manuual(code = """ 
+                             await bot1.chat('/tp @s -10 -60 -15');
+                             await bot2.chat('/tp @s -10 -60 10');
+                             await bot1.chat('/fill -40 -60 -40 40 -60 40 minecraft:air');
+                             await bot1.chat('/kill @e[type=!player]');
+                             await bot1.chat('/kill @e[type=item]');
+                             await bot1.chat('/summon sheep -5 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
+                             await bot1.chat('/summon chicken -3 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
+                             await bot1.chat('/setblock 0 -60 0 minecraft:chest');
+                             await bot1.chat('/setblock 2 -60 4 minecraft:oak_log');
+                             await bot1.chat('/setblock 2 -60 -2 minecraft:furnace');
+                              """  )
+        print(self._last_event)
         self.feedback = []
 
     def all_state(self):
         prompt = ""
-        for i in range(len(self.agents)):
-            prompt += f"agent {i} inventory :\n"
-            prompt += str(self.agents[i].last_events[-1][1]["inventory"])
+        for i in range(2):
+            prompt += f"agent {i+1} inventory :\n"
+            # print(self._last_event[f'bot{i+1}'])
+            # print()
+            # print(self._last_event[f'bot{i+1}'][0][1])
+            # print()
+            prompt += str(self._last_event[f'bot{i+1}'][-1][1]["inventory"])
             prompt += "\n"
-            prompt += f"agent {i} sourrending :\n"
-            prompt += str(self.agents[i].last_events[-1][1]["voxels"])
+            prompt += f"agent {i+1} sourrending :\n"
+            prompt += str(self._last_event[f'bot{i+1}'][-1][1]["voxels"])
+            prompt += "\n"
+            prompt += f"agent {i+1} sourrending entities :\n"
+            prompt += str(self._last_event[f'bot{i+1}'][-1][1]['status']["entities"])
+            prompt += "\n"
+        return prompt
     def step(self, actions):
         self.feedback = []
         valid , predicates, args, ignored_actions = self.validate_n_parse(actions)
@@ -151,4 +166,6 @@ class MultiVoyager():
         return True, predicates, args, ignored_actions
 
 if __name__ == '__main__':
-    env = MultiVoyager(40463, 1, 'sk-x', ['0 -60 0'])
+    env = MultiVoyager(40463, 'sk-x')
+    state = env.all_state()
+    print(state)
