@@ -3,7 +3,7 @@ from voyager import Voyager
 # You can also use mc_port instead of azure_login, but azure_login is highly recommended
 # check command: /data get entity bot3000 Inventory
 openai_api_key = "sk-xxx"
-port = 34363
+port = 44401
 voyager1 = Voyager(
     mc_port=port,
     openai_api_key=openai_api_key,
@@ -55,7 +55,7 @@ data = voyager1.step_manuual(code = """
 """)
 
 data = voyager1.step_manuual(code = """ await Promise.all([ takeOutFurnance(bot2)])  """)  
-data = voyager1.step_manuual(code = """ await Promise.all([ goto(bot2, 'chest' )])  """)     
+ 
 print(data)
 print()
 data = voyager1.step_manuual(code = """ await Promise.all([ putInChest(bot2, 'cooked_chicken')])  """)                     

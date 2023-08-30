@@ -35,26 +35,24 @@ async function depositItemIntoChest(bot, chestPosition, itemsToDeposit) {
             "chestPosition for depositItemIntoChest must be a Vec3"
         );
     }
-    await moveToChest(bot, chestPosition);
+    //await moveToChest(bot, chestPosition);
     const chestBlock = bot.blockAt(chestPosition);
     const chest = await bot.openContainer(chestBlock);
-    for (const name in itemsToDeposit) {
-        const itemByName = mcData.itemsByName[name];
-        if (!itemByName) {
-            bot.chat(`No item named ${name}`);
-            continue;
-        }
-        const item = bot.inventory.findInventoryItem(itemByName.id);
-        if (!item) {
-            bot.chat(`No ${name} in inventory`);
-            continue;
-        }
-        try {
-            await chest.deposit(item.type, null, itemsToDeposit[name]);
-        } catch (err) {
-            bot.chat(`Not enough ${name} in inventory.`);
-        }
+    
+    const itemByName = mcData.itemsByName[itemsToDeposit];
+    if (!itemByName) {
+        bot.chat(`No item named ${itemsToDeposit}`);
     }
+    const item = bot.inventory.findInventoryItem(itemByName.id);
+    if (!item) {
+        bot.chat(`No ${itemsToDeposit} in inventory`);
+    }
+    try {
+        await chest.deposit(item.type, null, 1);
+    } catch (err) {
+        bot.chat(`Not enough ${itemsToDeposit} in inventory.`);
+    }
+   
     await closeChest(bot, chestBlock);
 }
 

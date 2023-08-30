@@ -182,14 +182,17 @@ app.post("/start", (req, res) => {
             bot2.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
             await bot2.waitForTicks(bot2.waitTicks);
         }
+        
+
+        await bot2.waitForTicks(bot2.waitTicks * itemTicks);
+        await bot1.waitForTicks(bot1.waitTicks * itemTicks);
+        // return_data = str([bot1.observe(), bot2.observe()])
         moveHeldItemToInventory(bot1);
         moveHeldItemToInventory(bot2);
         clearBotInventory(bot1);
         clearBotInventory(bot2);
-
         await bot2.waitForTicks(bot2.waitTicks * itemTicks);
-        // return_data = str([bot1.observe(), bot2.observe()])
-        
+        await bot1.waitForTicks(bot1.waitTicks * itemTicks);
 
         res.json({bot1: bot1.observe(), bot2: bot2.observe()});
 
@@ -293,19 +296,19 @@ app.post("/step", async (req, res) => {
         }
     }
 
-    // function onTick2() {
-    //     bot2.globalTickCounter++;
-    //     if (bot2.pathfinder.isMoving()) {
-    //         bot2.stuckTickCounter++;
-    //         if (bot2.stuckTickCounter >= 100) {
-    //             onStuck2(1.5);
-    //             bot2.stuckTickCounter = 0;
-    //         }
-    //     }
-    // }
+    function onTick2() {
+        bot2.globalTickCounter++;
+        if (bot2.pathfinder.isMoving()) {
+            bot2.stuckTickCounter++;
+            if (bot2.stuckTickCounter >= 100) {
+                onStuck2(1.5);
+                bot2.stuckTickCounter = 0;
+            }
+        }
+    }
 
     bot1.on("physicTick", onTick);
-    // bot2.on("physicTick", onTick2);
+    bot2.on("physicTick", onTick2);
     // initialize fail count
     let _craftItemFailCount = 0;
     let _killMobFailCount = 0;
@@ -331,7 +334,7 @@ app.post("/step", async (req, res) => {
         res.json({bot1: bot1.observe(), bot2: bot2.observe()});
     }
     bot1.removeListener("physicTick", onTick);
-    // bot2.removeListener("physicTick", onTick2);
+    bot2.removeListener("physicTick", onTick2);
 
     async function evaluateCode(code, programs) {
         // Echo the code produced for players to see it. Don't echo when the bot code is already producing dialog or it will double echo
@@ -360,23 +363,23 @@ app.post("/step", async (req, res) => {
             bot1.stuckPosList.shift();
         }
     }
-    // function onStuck2(posThreshold) {
-    //     const currentPos = bot2.entity.position;
-    //     bot2.stuckPosList.push(currentPos);
+    function onStuck2(posThreshold) {
+        const currentPos = bot2.entity.position;
+        bot2.stuckPosList.push(currentPos);
 
-    //     // Check if the list is full
-    //     if (bot2.stuckPosList.length === 5) {
-    //         const oldestPos = bot2.stuckPosList[0];
-    //         const posDifference = currentPos.distanceTo(oldestPos);
+        // Check if the list is full
+        if (bot2.stuckPosList.length === 5) {
+            const oldestPos = bot2.stuckPosList[0];
+            const posDifference = currentPos.distanceTo(oldestPos);
 
-    //         if (posDifference < posThreshold) {
-    //             teleportBot2(); // execute the function
-    //         }
+            if (posDifference < posThreshold) {
+                teleportBot2(); // execute the function
+            }
 
-    //         // Remove the oldest time from the list
-    //         bot2.stuckPosList.shift();
-    //     }
-    // }
+            // Remove the oldest time from the list
+            bot2.stuckPosList.shift();
+        }
+    }
 
     function teleportBot() {
         const blocks = bot1.findBlocks({
@@ -397,24 +400,24 @@ app.post("/step", async (req, res) => {
         }
     }
 
-    // function teleportBot2() {
-    //     const blocks = bot2.findBlocks({
-    //         matching: (block) => {
-    //             return block.type === 0;
-    //         },
-    //         maxDistance: 1,
-    //         count: 27,
-    //     });
+    function teleportBot2() {
+        const blocks = bot2.findBlocks({
+            matching: (block) => {
+                return block.type === 0;
+            },
+            maxDistance: 1,
+            count: 27,
+        });
 
-    //     if (blocks) {
-    //         // console.log(blocks.length);
-    //         const randomIndex = Math.floor(Math.random() * blocks.length);
-    //         const block = blocks[randomIndex];
-    //         bot2.chat(`/tp @s ${block.x} ${block.y} ${block.z}`);
-    //     } else {
-    //         bot2.chat("/tp @s ~ ~1.25 ~");
-    //     }
-    // }
+        if (blocks) {
+            // console.log(blocks.length);
+            const randomIndex = Math.floor(Math.random() * blocks.length);
+            const block = blocks[randomIndex];
+            bot2.chat(`/tp @s ${block.x} ${block.y} ${block.z}`);
+        } else {
+            bot2.chat("/tp @s ~ ~1.25 ~");
+        }
+    }
 
     function handleError(err) {
         let stack = err.stack;
@@ -489,7 +492,7 @@ app.post("/stop", (req, res) => {
 });
 
 app.post("/pause", (req, res) => {
-    if (!bot1) {
+    if (!bot1 || !bot2) {
         res.status(400).json({ error: "Bot not spawned" });
         return;
     }
