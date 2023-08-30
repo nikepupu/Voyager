@@ -125,10 +125,7 @@ app.post("/start", (req, res) => {
         let itemTicks = 1;
         
         bot1.chat("/clear @s");
-        // bot1.chat("/kill @s");
-        await bot1.waitForTicks(bot1.waitTicks * 2);
-        bot2.chat("/clear @s");
-        // bot2.chat("/kill @s");
+        bot1.chat("/kill @s");
         
  
         const { pathfinder } = require("mineflayer-pathfinder");
@@ -163,6 +160,30 @@ app.post("/start", (req, res) => {
 
         initCounter(bot1);
 
+        await bot1.waitForTicks(bot1.waitTicks * itemTicks);
+        // return_data = str([bot1.observe(), bot2.observe()])
+        moveHeldItemToInventory(bot1);
+
+        clearBotInventory(bot1);
+
+        await bot1.waitForTicks(bot1.waitTicks * itemTicks);
+
+        // bot1.chat("/gamerule keepInventory true");
+        bot1.chat("/gamerule doDaylightCycle false");
+    });
+
+    bot2.once("spawn", async () => {
+        let itemTicks = 1;
+        
+        bot2.chat("/clear @s");
+        bot2.chat("/kill @s");
+        
+ 
+        const { pathfinder } = require("mineflayer-pathfinder");
+        const tool = require("mineflayer-tool").plugin;
+        const collectBlock = require("mineflayer-collectblock").plugin;
+        const pvp = require("mineflayer-pvp").plugin;
+        const minecraftHawkEye = require("minecrafthawkeye");
         bot2.loadPlugin(pathfinder);
         bot2.loadPlugin(tool);
         bot2.loadPlugin(collectBlock);
@@ -185,10 +206,17 @@ app.post("/start", (req, res) => {
             bot2.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
             await bot2.waitForTicks(bot2.waitTicks);
         }
-        
 
         await bot2.waitForTicks(bot2.waitTicks * itemTicks);
-        await bot1.waitForTicks(bot1.waitTicks * itemTicks);
+
+        initCounter(bot2);
+
+       
+        await bot2.waitForTicks(bot2.waitTicks * itemTicks);
+    
+        moveHeldItemToInventory(bot2); 
+        clearBotInventory(bot2);
+        await bot2.waitForTicks(bot2.waitTicks * itemTicks);
 
         res.json({bot1: bot1.observe(), bot2: bot2.observe()});
 
@@ -280,13 +308,6 @@ app.post("/step", async (req, res) => {
     bot1.globalTickCounter = 0;
     bot1.stuckTickCounter = 0;
     bot1.stuckPosList = [];
-
-    const movements2 = new Movements(bot2, mcData);
-    bot2.pathfinder.setMovements(movements2);
-
-    bot2.globalTickCounter = 0;
-    bot2.stuckTickCounter = 0;
-    bot2.stuckPosList = [];
 
     function onTick() {
         bot1.globalTickCounter++;

@@ -4,7 +4,7 @@ async function putInChest(bot, itemName) {
     }
     const chestBlock = bot.findBlock({
         matching: mcData.blocksByName.chest.id,
-        maxDistance: 32,
+        maxDistance: 8,
     });
     if (!chestBlock) {
         throw new Error("No chest nearby");

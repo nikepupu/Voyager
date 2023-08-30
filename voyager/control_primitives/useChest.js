@@ -35,15 +35,18 @@ async function depositItemIntoChest(bot, chestPosition, itemsToDeposit) {
             "chestPosition for depositItemIntoChest must be a Vec3"
         );
     }
-    //await moveToChest(bot, chestPosition);
+    await moveToChest(bot, chestPosition);
     const chestBlock = bot.blockAt(chestPosition);
     const chest = await bot.openContainer(chestBlock);
     
-    const itemByName = mcData.itemsByName[itemsToDeposit];
-    if (!itemByName) {
+    const itemFromName = mcData.itemsByName[itemsToDeposit];
+    if (!itemFromName) {
         bot.chat(`No item named ${itemsToDeposit}`);
     }
-    const item = bot.inventory.findInventoryItem(itemByName.id);
+    // const item = bot.inventory.findInventoryItem(itemByName.id);
+    const inventory = bot.currentWindow || bot.inventory;
+    const item = itemByName(inventory.items(), itemsToDeposit);
+
     if (!item) {
         bot.chat(`No ${itemsToDeposit} in inventory`);
     }

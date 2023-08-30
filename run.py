@@ -45,7 +45,8 @@ data = voyager1.step_manuual(code = """
 data = voyager1.step_manuual(code = """ 
    await Promise.all([mineBlock(bot1, 'oak_log', 1), killMob(bot2, 'chicken', 300)])            
 """)
-
+                             
+                        
 data = voyager1.step_manuual(code = """ 
    await Promise.all([goto(bot1, 'furnace'), goto(bot2, 'furnace')])            
 """)
@@ -54,11 +55,15 @@ data = voyager1.step_manuual(code = """
    await Promise.all([putFuelFurnance(bot1, 'oak_log'), putItemFurnance(bot2, 'chicken')])            
 """)
 
-data = voyager1.step_manuual(code = """ await Promise.all([ takeOutFurnance(bot2)])  """)  
+data = voyager1.step_manuual(code = """ await Promise.all([ takeOutFurnance(bot1)])  """)  
  
+data = voyager1.step_manuual(code = """ 
+   await Promise.all([goto(bot1, 'chest')])            
+""")
+
 print(data)
 print()
-data = voyager1.step_manuual(code = """ await Promise.all([ putInChest(bot2, 'cooked_chicken')])  """)                     
+data = voyager1.step_manuual(code = """ await Promise.all([ putInChest(bot1, 'cooked_chicken')])  """)                     
 # data = voyager1.step_manuual(code = """ 
 #    await goto(bot, 'furnace');
 # """)
