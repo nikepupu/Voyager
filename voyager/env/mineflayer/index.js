@@ -17,7 +17,57 @@ const { plugin: tool } = require("mineflayer-tool");
 
 let bot1 = null;
 let bot2 = null;
+function clearBotInventory(bot){
+    // Iterate through the bot's inventory slots
+    bot.inventory.slots.forEach((slot, index) => {
+      if (slot) {
+        bot.tossStack(slot, (err) => {
+          if (err) {
+            console.error(`Error tossing item from slot ${index}:`, err);
+          }
+        });
+      }
+    });
 
+}
+
+  function moveHeldItemToInventory() {
+    const heldItem1 = bot1.heldItem;
+    
+    if (!heldItem1) {
+        bot1.chat("Bot isn't holding any item.");
+        return;
+    }
+  
+    // Find first empty slot in the main inventory (excluding hotbar)
+    let firstEmptySlotIndex = bot1.inventory.slots.slice(9, 36).findIndex(slot => !slot);
+  
+    if (firstEmptySlotIndex === -1) {
+      bot1.chat("No empty slot found in the main inventory.");
+      return;
+    }
+  
+    // Move the held item to the first empty slot in the main inventory
+    bot1.inventory.move(bot1.quickBarSlot, firstEmptySlotIndex + 9);
+
+    const heldItem2 = bot2.heldItem;
+    if (!heldItem2) {
+        bot2.chat("Bot isn't holding any item.");
+        return;
+      }
+    
+      // Find first empty slot in the main inventory (excluding hotbar)
+    firstEmptySlotIndex = bot2.inventory.slots.slice(9, 36).findIndex(slot => !slot);
+    
+      if (firstEmptySlotIndex === -1) {
+        bot2.chat("No empty slot found in the main inventory.");
+        return;
+      }
+    
+      // Move the held item to the first empty slot in the main inventory
+      bot2.inventory.move(bot2.quickBarSlot, firstEmptySlotIndex + 9);
+
+  }
 const app = express();
 
 app.use(bodyParser.json({ limit: "50mb" }));
@@ -76,26 +126,8 @@ app.post("/start", (req, res) => {
         
         bot1.chat("/clear @s");
         bot1.chat("/kill @s");
+        
  
-
-        
-        let inventory = bot1.inventory.slots;
-
-        for (let slot of inventory) {
-            if (slot) {
-                bot1.tossStack(slot);
-            }
-        }
-
-        inventory = bot2.inventory.slots;
-        for (let slot of inventory) {
-            if (slot) {
-                bot1.tossStack(slot);
-            }
-        }
-        
-        
-
         const { pathfinder } = require("mineflayer-pathfinder");
         const tool = require("mineflayer-tool").plugin;
         const collectBlock = require("mineflayer-collectblock").plugin;
@@ -106,9 +138,6 @@ app.post("/start", (req, res) => {
         bot1.loadPlugin(collectBlock);
         bot1.loadPlugin(pvp);
         bot1.loadPlugin(minecraftHawkEye);
-
-        // bot.collectBlock.movements.digCost = 0;
-        // bot.collectBlock.movements.placeCost = 0;
 
         obs.inject(bot1, [
             OnChat,
@@ -128,7 +157,6 @@ app.post("/start", (req, res) => {
         }
 
         await bot1.waitForTicks(bot1.waitTicks * itemTicks);
-        
 
         initCounter(bot1);
 
@@ -137,9 +165,6 @@ app.post("/start", (req, res) => {
         bot2.loadPlugin(collectBlock);
         bot2.loadPlugin(pvp);
         bot2.loadPlugin(minecraftHawkEye);
-
-        // bot.collectBlock.movements.digCost = 0;
-        // bot.collectBlock.movements.placeCost = 0;
 
         obs.inject(bot2, [
             OnChat,
@@ -153,65 +178,24 @@ app.post("/start", (req, res) => {
         ]);
         skills.inject(bot2);
 
-        bot1.unequip()
-
         if (req.body.spread) {
             bot2.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
             await bot2.waitForTicks(bot2.waitTicks);
         }
+        moveHeldItemToInventory(bot1);
+        moveHeldItemToInventory(bot2);
+        clearBotInventory(bot1);
+        clearBotInventory(bot2);
 
         await bot2.waitForTicks(bot2.waitTicks * itemTicks);
         // return_data = str([bot1.observe(), bot2.observe()])
-        bot1.unequip();
-        bot2.unequip();
+        
+
         res.json({bot1: bot1.observe(), bot2: bot2.observe()});
 
         // bot1.chat("/gamerule keepInventory true");
         // bot1.chat("/gamerule doDaylightCycle false");
     });
-
-
-    // bot2.once("spawn", async () => {
-    //     // bot2.removeListener("error", onConnectionFailed);
-
-    //     const { pathfinder } = require("mineflayer-pathfinder");
-    //     const tool = require("mineflayer-tool").plugin;
-    //     const collectBlock = require("mineflayer-collectblock").plugin;
-    //     const pvp = require("mineflayer-pvp").plugin;
-    //     const minecraftHawkEye = require("minecrafthawkeye");
-    //     bot2.loadPlugin(pathfinder);
-    //     bot2.loadPlugin(tool);
-    //     bot2.loadPlugin(collectBlock);
-    //     bot2.loadPlugin(pvp);
-    //     bot2.loadPlugin(minecraftHawkEye);
-
-    //     // bot.collectBlock.movements.digCost = 0;
-    //     // bot.collectBlock.movements.placeCost = 0;
-
-    //     obs.inject(bot2, [
-    //         OnChat,
-    //         OnError,
-    //         Voxels,
-    //         Status,
-    //         Inventory,
-    //         OnSave,
-    //         Chests,
-    //         BlockRecords,
-    //     ]);
-    //     skills.inject(bot2);
-
-    //     if (req.body.spread) {
-    //         bot2.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
-    //         await bot2.waitForTicks(bot2.waitTicks);
-    //     }
-
-    //     await bot2.waitForTicks(bot2.waitTicks * itemTicks);
-    //     res.json(bot2.observe());
-
-    //     initCounter(bot2);
-    //     bot2.chat("/gamerule keepInventory true");
-    //     bot2.chat("/gamerule doDaylightCycle false");
-    // });
 
     function onConnectionFailed(e) {
         console.log(e);

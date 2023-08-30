@@ -2,11 +2,12 @@ async function goto(bot, locationName) {
     const blockByName = mcData.blocksByName[locationName];
     let block; // Define block here so it's in the outer scope.
 
-    if (['furnace', 'oak_log'].includes(locationName)) {
+    if (['furnace', 'oak_log', 'chest'].includes(locationName)) {
         block = bot.findBlock({
             matching: blockByName.id,
             maxDistance: 48,
         });
+        
     } else if (['sheep', 'chicken'].includes(locationName)) {
         block = bot.nearestEntity(
             (entity) =>

@@ -3,7 +3,7 @@ from voyager import Voyager
 # You can also use mc_port instead of azure_login, but azure_login is highly recommended
 # check command: /data get entity bot3000 Inventory
 openai_api_key = "sk-xxx"
-port = 40463
+port = 34363
 voyager1 = Voyager(
     mc_port=port,
     openai_api_key=openai_api_key,
@@ -11,18 +11,17 @@ voyager1 = Voyager(
     env_wait_ticks=20,
 )
 
-
-
 voyager1.start()
 #  await bot1.chat('/tp @s 0 -60 0');
 data = voyager1.step_manuual(code = """ 
-                             await bot1.chat('/tp @s -10 -60 -10');
+                             await bot1.chat('/tp @s -10 -60 -15');
                              await bot2.chat('/tp @s -10 -60 10');
                              await bot1.chat('/fill -40 -60 -40 40 -60 40 minecraft:air');
                              await bot1.chat('/kill @e[type=!player]');
                              await bot1.chat('/kill @e[type=item]');
-                             await bot1.chat('/summon sheep -5 -60 -10 {NoAI:1}');
-                             await bot1.chat('/summon chicken -3 -60 -10 {NoAI:1}');
+                             await bot1.chat('/summon sheep -5 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
+                             await bot1.chat('/summon chicken -3 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
+                             await bot1.chat('/setblock 0 -60 0 minecraft:chest');
                              await bot1.chat('/setblock 2 -60 4 minecraft:oak_log');
                              await bot1.chat('/setblock 2 -60 -2 minecraft:furnace');
                               """  )
@@ -36,12 +35,15 @@ data = voyager1.step_manuual(code = """
 # data = voyager1.step_manuual(code = """
 #     await mineBlock(bot, 'oak_log', 1);
 #  """)
+print(data)
+print()
+
 data = voyager1.step_manuual(code = """ 
-   await Promise.all([goto(bot1, 'oak_log'), goto(bot2, 'sheep')])            
+   await Promise.all([goto(bot1, 'oak_log'), goto(bot2, 'chicken')])            
 """)
                              
 data = voyager1.step_manuual(code = """ 
-   await Promise.all([mineBlock(bot1, 'oak_log', 1), killMob(bot2, 'sheep', 300)])            
+   await Promise.all([mineBlock(bot1, 'oak_log', 1), killMob(bot2, 'chicken', 300)])            
 """)
 
 data = voyager1.step_manuual(code = """ 
@@ -49,9 +51,14 @@ data = voyager1.step_manuual(code = """
 """)
 
 data = voyager1.step_manuual(code = """ 
-   await Promise.all([putFuelFurnance(bot1, 'oak_log'), putItemFurnance(bot2, 'mutton')])            
+   await Promise.all([putFuelFurnance(bot1, 'oak_log'), putItemFurnance(bot2, 'chicken')])            
 """)
-                             
+
+data = voyager1.step_manuual(code = """ await Promise.all([ takeOutFurnance(bot2)])  """)  
+data = voyager1.step_manuual(code = """ await Promise.all([ goto(bot2, 'chest' )])  """)     
+print(data)
+print()
+data = voyager1.step_manuual(code = """ await Promise.all([ putInChest(bot2, 'cooked_chicken')])  """)                     
 # data = voyager1.step_manuual(code = """ 
 #    await goto(bot, 'furnace');
 # """)
@@ -135,6 +142,4 @@ voyager1.env.unpause()
 # print('done')
 # print(voyager1.last_events[-1][1]["inventory"])
 # print(voyager2.last_events[-1][1]["inventory"])
-# while True:
-#     continue
 
