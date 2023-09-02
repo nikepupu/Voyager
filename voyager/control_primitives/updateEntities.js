@@ -5,8 +5,10 @@ function arePositionsAlmostEqual(pos1, pos2, threshold = 1) {
 }
 
 async function updateEntities(bot, level) {
-    if (level == 1) {
-        const entities = [
+    let entitiesList = [];
+    let voxel_list = [];
+    if (level == '1') {
+        entitiesList = [
             {
                 name: 'sheep',
                 position: new Vec3(-5, -60, -10)
@@ -16,15 +18,34 @@ async function updateEntities(bot, level) {
                 position: new Vec3(-3, -60, -10)
             }
         ];
+        voxel_list = [
+            {
+                name: 'oak_log',
+                position: new Vec3(2, -60, 4)
+            }
+        ]
+
     }
     
 
-    for(let entity of entities) {
-        let target_pos = entity.position;
-        let name = entity.name;
-        let block = bot.blockAt(target_pos);
+    for(let entity_target of entitiesList) {
+        let target_pos = entity_target.position;
+        let name = entity_target.name;
 
-        if ( !block || block.name !== name) {
+        const entities = bot.entities;
+        if (!entities) return {};
+    
+        found = false;
+        for (const id in entities) {
+            const entity = entities[id];
+            if (!entity.displayName) continue;
+            if (entity.name === "player" || entity.name === "item") continue;
+            if (entity.name === name && entity.position.distanceTo(target_pos) < 2) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
             if (name === 'sheep') {
                 bot.chat('/summon sheep ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
             } else if (name === 'chicken') {
@@ -32,6 +53,15 @@ async function updateEntities(bot, level) {
             }
         }
      
+    }
+
+    for (let voxel_target of voxel_list) {
+        let target_pos = voxel_target.position;
+        let name = voxel_target.name;
+        let block = bot.blockAt(target_pos);
+        if (block.name !== name) {
+            bot.chat(`/setblock ${target_pos.x} ${target_pos.y} ${target_pos.z} ${name}`);
+        }
     }
 
 }

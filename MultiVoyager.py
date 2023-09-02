@@ -8,6 +8,7 @@ class MultiVoyager():
         self.mc_port = mc_port
         self.username = username
         self.agents = []
+        self.time_step = 0
         openai_api_key = "sk-xxx"
     
         self.env = Voyager(
@@ -77,9 +78,10 @@ class MultiVoyager():
         return prompt
     
     def step(self, actions):
-        
+        self.time_step += 1
+
         def construct_action_str(actions):
-            actions = actions + [self.copy_inventory_code]
+            actions = actions + [self.copy_inventory_code, "updateEntities(bot1, '1' )"]
             action_str = ""
             for i in range(len(actions)):
                 action_str += f"{actions[i]},"
