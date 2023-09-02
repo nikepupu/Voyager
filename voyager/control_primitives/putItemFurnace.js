@@ -1,4 +1,4 @@
-async function putItemFurnance(bot, itemName) {
+async function putItemFurnace(bot, itemName) {
     // return if itemName or fuelName is not string
     if (typeof itemName !== "string" ) {
         throw new Error("itemName for smeltItem must be a string");
@@ -23,7 +23,11 @@ async function putItemFurnance(bot, itemName) {
     }
     
     await furnace.putInput(item.id, null, 1);
-    await bot.waitForTicks(12 * 20);
     
-    furnace.close();
+    await bot.waitForTicks(12 * 40);
+    
+
+    bot1.emit("updateFurnace", furnaceBlock.position , furnace.inputItem(), furnace.fuelItem(), furnace.outputItem());
+    bot2.emit("updateFurnace", furnaceBlock.position , furnace.inputItem(), furnace.fuelItem(), furnace.outputItem());
+    await furnace.close();
 }

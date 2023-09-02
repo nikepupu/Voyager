@@ -1,4 +1,4 @@
-async function takeOutFurnance(bot) {
+async function takeOutFurnace(bot) {
 
     const furnaceBlock = bot.findBlock({
         matching: mcData.blocksByName.furnace.id,
@@ -12,6 +12,10 @@ async function takeOutFurnance(bot) {
         );
     }
     const furnace = await bot.openFurnace(furnaceBlock);
-   
+    
     await furnace.takeOutput();
+
+    bot1.emit("updateFurnace", furnaceBlock.position , furnace.inputItem(), furnace.fuelItem(), furnace.outputItem());
+    bot2.emit("updateFurnace", furnaceBlock.position , furnace.inputItem(), furnace.fuelItem(), furnace.outputItem());
+    await furnace.close();
 }

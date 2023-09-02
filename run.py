@@ -43,7 +43,7 @@ data = voyager1.step_manuual(code = """
 """)
                              
 data = voyager1.step_manuual(code = """ 
-   await Promise.all([mineBlock(bot1, 'oak_log', 1), killMob(bot2, 'chicken', 300)])            
+   await Promise.all([mineBlock(bot1, 'oak_log'), killMob(bot2, 'chicken')])            
 """)
                              
                         

@@ -13,61 +13,12 @@ const Status = require("./lib/observation/status");
 const Inventory = require("./lib/observation/inventory");
 const OnSave = require("./lib/observation/onSave");
 const Chests = require("./lib/observation/chests");
+const Furnaces = require("./lib/observation/furnaces");
 const { plugin: tool } = require("mineflayer-tool");
 
 let bot1 = null;
 let bot2 = null;
-function clearBotInventory(bot){
-    // Iterate through the bot's inventory slots
-    bot.inventory.slots.forEach((slot, index) => {
-      if (slot) {
-        bot.tossStack(slot, (err) => {
-          if (err) {
-            console.error(`Error tossing item from slot ${index}:`, err);
-          }
-        });
-      }
-    });
-
-}
-
-  function moveHeldItemToInventory() {
-    const heldItem1 = bot1.heldItem;
-    
-    if (!heldItem1) {
-        bot1.chat("Bot isn't holding any item.");
-        return;
-    }
-  
-    // Find first empty slot in the main inventory (excluding hotbar)
-    let firstEmptySlotIndex = bot1.inventory.slots.slice(9, 36).findIndex(slot => !slot);
-  
-    if (firstEmptySlotIndex === -1) {
-      bot1.chat("No empty slot found in the main inventory.");
-      return;
-    }
-  
-    // Move the held item to the first empty slot in the main inventory
-    bot1.inventory.move(bot1.quickBarSlot, firstEmptySlotIndex + 9);
-
-    const heldItem2 = bot2.heldItem;
-    if (!heldItem2) {
-        bot2.chat("Bot isn't holding any item.");
-        return;
-      }
-    
-      // Find first empty slot in the main inventory (excluding hotbar)
-    firstEmptySlotIndex = bot2.inventory.slots.slice(9, 36).findIndex(slot => !slot);
-    
-      if (firstEmptySlotIndex === -1) {
-        bot2.chat("No empty slot found in the main inventory.");
-        return;
-      }
-    
-      // Move the held item to the first empty slot in the main inventory
-      bot2.inventory.move(bot2.quickBarSlot, firstEmptySlotIndex + 9);
-
-  }
+let bot3 = null;
 const app = express();
 
 app.use(bodyParser.json({ limit: "50mb" }));
@@ -80,7 +31,7 @@ app.post("/start", (req, res) => {
     bot1 = mineflayer.createBot({
         host: "localhost", // minecraft server ip
         port: req.body.port, // minecraft server port
-        username: "bot" + PORT, // minecraft username
+        username: "bot1", // minecraft username
         disableChatSigning: true,
         checkTimeoutInterval: 60 * 60 * 1000,
     });
@@ -88,7 +39,15 @@ app.post("/start", (req, res) => {
     bot2 = mineflayer.createBot({
         host: "localhost", // minecraft server ip
         port: req.body.port, // minecraft server port
-        username: "bot" + PORT+2, // minecraft username
+        username: "bot2", // minecraft username
+        disableChatSigning: true,
+        checkTimeoutInterval: 60 * 60 * 1000,
+    });
+
+    bot3 = mineflayer.createBot({
+        host: "localhost", // minecraft server ip
+        port: req.body.port, // minecraft server port
+        username: "bot3", // minecraft username
         disableChatSigning: true,
         checkTimeoutInterval: 60 * 60 * 1000,
     });
@@ -111,6 +70,15 @@ app.post("/start", (req, res) => {
     bot2.iron_pickaxe = false;
     bot2.on("kicked", onDisconnect);
 
+    if (bot3){
+        bot3.waitTicks = req.body.waitTicks;
+        bot3.globalTickCounter = 0;
+        bot3.stuckTickCounter = 0;
+        bot3.stuckPosList = [];
+        bot3.iron_pickaxe = false;
+        bot3.on("kicked", onDisconnect);
+    }
+
     // mounting will cause physicsTick to stop
     bot1.on("mount", () => {
         bot1.dismount();
@@ -119,6 +87,11 @@ app.post("/start", (req, res) => {
     bot2.on("mount", () => {
         bot2.dismount();
     });
+    if (bot3){
+        bot3.on("mount", () => {
+            bot3.dismount();
+        });
+    }
 
     bot1.once("spawn", async () => {
         bot1.removeListener("error", onConnectionFailed);
@@ -126,9 +99,11 @@ app.post("/start", (req, res) => {
         
         bot1.chat("/clear @s");
         // bot1.chat("/kill @s");
-        await bot1.waitForTicks(bot1.waitTicks * 2);
+        await bot1.waitForTicks(bot1.waitTicks * 3);
         bot2.chat("/clear @s");
         // bot2.chat("/kill @s");
+        bot3.chat("/clear @s");
+
         
  
         const { pathfinder } = require("mineflayer-pathfinder");
@@ -151,6 +126,7 @@ app.post("/start", (req, res) => {
             OnSave,
             Chests,
             BlockRecords,
+            Furnaces,
         ]);
         skills.inject(bot1);
 
@@ -178,6 +154,7 @@ app.post("/start", (req, res) => {
             OnSave,
             Chests,
             BlockRecords,
+            Furnaces,
         ]);
         skills.inject(bot2);
 
@@ -185,12 +162,29 @@ app.post("/start", (req, res) => {
             bot2.chat(`/spreadplayers ~ ~ 0 300 under 80 false @s`);
             await bot2.waitForTicks(bot2.waitTicks);
         }
+        bot3.loadPlugin(pathfinder);
+        bot3.loadPlugin(tool);
+        bot3.loadPlugin(collectBlock);
+        bot3.loadPlugin(pvp);
+        bot3.loadPlugin(minecraftHawkEye);
+        obs.inject(bot3, [
+            OnChat,
+            OnError,
+            Voxels,
+            Status,
+            Inventory,
+            OnSave,
+            Chests,
+            BlockRecords,
+            Furnaces,
+        ]);
+        skills.inject(bot3);
         
 
         await bot2.waitForTicks(bot2.waitTicks * itemTicks);
         await bot1.waitForTicks(bot1.waitTicks * itemTicks);
 
-        res.json({bot1: bot1.observe(), bot2: bot2.observe()});
+        res.json({bot1: bot1.observe(), bot2: bot2.observe(), bot3: bot3.observe()});
 
         // bot1.chat("/gamerule keepInventory true");
         // bot1.chat("/gamerule doDaylightCycle false");
@@ -200,6 +194,7 @@ app.post("/start", (req, res) => {
         console.log(e);
         bot1 = null;
         bot2 = null;
+        bot3 = null;
         res.status(400).json({ error: e });
     }
     function onDisconnect(message) {
@@ -216,6 +211,13 @@ app.post("/start", (req, res) => {
         bot2.end();
         console.log(message);
         bot2 = null;
+
+        if (bot3.viewer) {
+            bot3.viewer.close();
+        }
+        bot3.end();
+        console.log(message);
+        bot3 = null;
     }
 });
 
@@ -228,7 +230,7 @@ app.post("/step", async (req, res) => {
         bot1.waitForTicks(bot1.waitTicks).then(() => {
             if (!response_sent) {
                 response_sent = true;
-                res.json({bot1: bot1.observe(), bot2: bot2.observe()});
+                res.json({bot1: bot1.observe(), bot2: bot2.observe(), bot3: bot3.observe()});
             }
         });
     }
@@ -312,6 +314,7 @@ app.post("/step", async (req, res) => {
 
     bot1.on("physicTick", onTick);
     bot2.on("physicTick", onTick2);
+   
     // initialize fail count
     let _craftItemFailCount = 0;
     let _killMobFailCount = 0;
@@ -334,10 +337,11 @@ app.post("/step", async (req, res) => {
     await bot1.waitForTicks(bot1.waitTicks);
     if (!response_sent) {
         response_sent = true;
-        res.json({bot1: bot1.observe(), bot2: bot2.observe()});
+        res.json({bot1: bot1.observe(), bot2: bot2.observe(), bot3: bot3.observe()});
     }
     bot1.removeListener("physicTick", onTick);
     bot2.removeListener("physicTick", onTick2);
+    // bot3.removeListener("physicTick", onTick2);
 
     async function evaluateCode(code, programs) {
         // Echo the code produced for players to see it. Don't echo when the bot code is already producing dialog or it will double echo
@@ -489,6 +493,7 @@ app.post("/step", async (req, res) => {
 app.post("/stop", (req, res) => {
     bot1.end();
     bot2.end();
+    bot3.end();
     res.json({
         message: "Bot stopped",
     });

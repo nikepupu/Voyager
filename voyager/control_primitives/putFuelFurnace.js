@@ -1,4 +1,4 @@
-async function putFuelFurnance(bot, fuelName) {
+async function putFuelFurnace(bot, fuelName) {
     // return if itemName or fuelName is not string
     if ( typeof fuelName !== "string") {
         throw new Error("fuelName must be a string");
@@ -13,7 +13,7 @@ async function putFuelFurnance(bot, fuelName) {
     
     const furnaceBlock = bot.findBlock({
         matching: mcData.blocksByName.furnace.id,
-        maxDistance: 32,
+        maxDistance: 48,
     });
     
     const furnace = await bot.openFurnace(furnaceBlock);
@@ -25,12 +25,17 @@ async function putFuelFurnance(bot, fuelName) {
         return
     }
     await furnace.putFuel(fuel.id, null, 1);
+   
     await bot.waitForTicks(20);
     if (!furnace.fuel && furnace.fuelItem()?.name !== fuelName) {
         throw new Error(`${fuelName} is not a valid fuel`);
     }
    
     
-    await bot.waitForTicks(12 * 20);
-    furnace.close();
+    await bot.waitForTicks(12 * 40);
+
+    bot1.emit("updateFurnace", furnaceBlock.position , furnace.inputItem(), furnace.fuelItem(), furnace.outputItem());
+    bot2.emit("updateFurnace", furnaceBlock.position , furnace.inputItem(), furnace.fuelItem(), furnace.outputItem());
+    await furnace.close();
+
 }

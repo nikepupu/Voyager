@@ -35,7 +35,7 @@ async function depositItemIntoChest(bot, chestPosition, itemsToDeposit) {
             "chestPosition for depositItemIntoChest must be a Vec3"
         );
     }
-    await moveToChest(bot, chestPosition);
+    // await moveToChest(bot, chestPosition);
     const chestBlock = bot.blockAt(chestPosition);
     const chest = await bot.openContainer(chestBlock);
     
@@ -51,11 +51,15 @@ async function depositItemIntoChest(bot, chestPosition, itemsToDeposit) {
         bot.chat(`No ${itemsToDeposit} in inventory`);
     }
     try {
+        
         await chest.deposit(item.type, null, 1);
     } catch (err) {
         bot.chat(`Not enough ${itemsToDeposit} in inventory.`);
     }
-   
+    
+    bot1.emit("closeChest", {itemsToDeposit}, chestBlock.position);
+    bot2.emit("closeChest", {itemsToDeposit}, chestBlock.position);
+    
     await closeChest(bot, chestBlock);
 }
 
@@ -86,7 +90,8 @@ async function moveToChest(bot, chestPosition) {
     }
     const chestBlock = bot.blockAt(chestPosition);
     if (chestBlock.name !== "chest") {
-        bot.emit("removeChest", chestPosition);
+        bot1.emit("removeChest", chestPosition);
+        bot2.emit("removeChest", chestPosition);
         throw new Error(
             `No chest at ${chestPosition}, it is ${chestBlock.name}`
         );
@@ -109,11 +114,38 @@ async function listItemsInChest(bot, chestBlock) {
             }
             return acc;
         }, {});
+        bot1.emit("closeChest", itemNames, chestBlock.position);
+        bot2.emit("closeChest", itemNames, chestBlock.position);
+    } else {
+        bot1.emit("closeChest", {}, chestBlock.position);
+        bot2.emit("closeChest", {}, chestBlock.position);
+    }
+    
+    return chest;
+}
+
+async function updatePlayerChestInventory(bot){
+   
+    let chestPosition = new Vec3(80, -60, 80);
+    const chestBlock = bot.blockAt(chestPosition);
+    bot.chat('/data modify block 80 -60 80 Items set from entity nikepupu9 Inventory');
+    const chest = await bot.openContainer(chestBlock);
+    const items = chest.containerItems();
+    if (items.length > 0) {
+        const itemNames = items.reduce((acc, obj) => {
+            if (acc[obj.name]) {
+                acc[obj.name] += obj.count;
+            } else {
+                acc[obj.name] = obj.count;
+            }
+            return acc;
+        }, {});
         bot.emit("closeChest", itemNames, chestBlock.position);
     } else {
         bot.emit("closeChest", {}, chestBlock.position);
     }
-    return chest;
+
+    await chest.close();
 }
 
 async function closeChest(bot, chestBlock) {

@@ -21,7 +21,7 @@ class Chests extends Observation {
         });
         chests.forEach((chest) => {
             if (!this.chestsItems.hasOwnProperty(chest)) {
-                this.chestsItems[chest] = "Unknown";
+                this.chestsItems[chest] = "[]";
             }
         });
         return this.chestsItems;

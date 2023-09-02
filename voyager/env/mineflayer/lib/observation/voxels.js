@@ -23,7 +23,14 @@ class BlockRecords extends Observation {
             if (this.tick >= 100) {
                 const items = getInventoryItems(this.bot);
                 getSurroundingBlocks(this.bot, 32, 4, 32).forEach((block) => {
-                    if (!items.has(block)) this.records.add(block);
+                    if (!items.has(block)) {
+                        if (typeof block === 'string') {
+                            this.records.add(block);
+                        }
+                        else{
+                            this.records.add(block[0]);
+                        }
+                    }
                 });
                 this.tick = 0;
             }
@@ -51,7 +58,8 @@ function getSurroundingBlocks(bot, x_distance, y_distance, z_distance) {
                         surroundingBlocks.add(block.name);
                     }
                     else{
-                        surroundingBlocks.add([block.name, x ,y ,z]);
+                        let dist = Math.sqrt(x * x + y * y + z * z);
+                        surroundingBlocks.add([block.name, dist]);
                     }
                 }
             }
