@@ -131,6 +131,7 @@ async function updatePlayerChestInventory(bot){
     bot.chat('/data modify block 80 -60 80 Items set from entity nikepupu9 Inventory');
     const chest = await bot.openContainer(chestBlock);
     const items = chest.containerItems();
+    await bot.waitForTicks(40);
     if (items.length > 0) {
         const itemNames = items.reduce((acc, obj) => {
             if (acc[obj.name]) {
@@ -145,7 +146,9 @@ async function updatePlayerChestInventory(bot){
         bot.emit("closeChest", {}, chestBlock.position);
     }
 
+    
     await chest.close();
+    
 }
 
 async function closeChest(bot, chestBlock) {

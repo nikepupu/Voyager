@@ -26,13 +26,12 @@ async function putFuelFurnace(bot, fuelName) {
     }
     await furnace.putFuel(fuel.id, null, 1);
    
-    await bot.waitForTicks(20);
     if (!furnace.fuel && furnace.fuelItem()?.name !== fuelName) {
         throw new Error(`${fuelName} is not a valid fuel`);
     }
    
     
-    await bot.waitForTicks(12 * 40);
+    await bot.waitForTicks(12 * 25);
 
     bot1.emit("updateFurnace", furnaceBlock.position , furnace.inputItem(), furnace.fuelItem(), furnace.outputItem());
     bot2.emit("updateFurnace", furnaceBlock.position , furnace.inputItem(), furnace.fuelItem(), furnace.outputItem());

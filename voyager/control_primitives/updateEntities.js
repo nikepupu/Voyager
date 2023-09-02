@@ -22,20 +22,16 @@ async function updateEntities(bot, level) {
     for(let entity of entities) {
         let target_pos = entity.position;
         let name = entity.name;
-        let block = bot.blockAt(pos);
+        let block = bot.blockAt(target_pos);
 
-        // const close_entities = Object.values(bot.entities);
-        // if ( !block || block.name !== name) {
-        //     if (name === 'sheep') {
-        //         bot.chat('/summon sheep ' + pos.x + ' ' + pos.y + ' ' + pos.z + ' {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
-        //     } else if (name === 'chicken') {
-        //         bot.chat('/summon chicken ' + pos.x + ' ' + pos.y + ' ' + pos.z + ' {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
-        //     }
-        // }
-        const entityAtLocation = Object.values(bot.entities).find(entity => {
-            return arePositionsAlmostEqual(entity.position, target_pos);
-        });
-        bot.chat(entityAtLocation)
+        if ( !block || block.name !== name) {
+            if (name === 'sheep') {
+                bot.chat('/summon sheep ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
+            } else if (name === 'chicken') {
+                bot.chat('/summon chicken ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
+            }
+        }
+     
     }
 
 }

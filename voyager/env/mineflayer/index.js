@@ -104,6 +104,9 @@ app.post("/start", (req, res) => {
         // bot2.chat("/kill @s");
         bot3.chat("/clear @s");
 
+        bot1.chat('/time set day');
+        bot1.chat('/gamerule doDaylightCycle false');
+
         
  
         const { pathfinder } = require("mineflayer-pathfinder");

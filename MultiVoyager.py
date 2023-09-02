@@ -17,8 +17,8 @@ class MultiVoyager():
             env_wait_ticks=20,
         )
         self.env.start()
-        #  await bot1.chat('/summon sheep -5 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
-        #         await bot1.chat('/summon chicken -3 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
+        # await bot1.chat('/summon sheep -5 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
+        # await bot1.chat('/summon chicken -3 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
         code = """ 
                 await bot1.chat('/tp @s -10 -60 -15');
                 await bot2.chat('/tp @s -10 -60 10');
@@ -31,11 +31,15 @@ class MultiVoyager():
                 await bot1.chat('/setblock 2 -60 -2 minecraft:furnace');
                 await bot1.chat('/fill 20 -60 20 20 -60 20 minecraft:air');          
                 await bot1.chat('/setblock 80 -60 80 minecraft:chest');    
+                await bot1.chat('/summon sheep -5 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
+                await bot1.chat('/summon chicken -3 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
         """
         self.copy_inventory_code = f"updatePlayerChestInventory(bot3)"
         code += f"await updatePlayerChestInventory(bot3);"
         self._last_event = self.env.step_manuual(code = code)
-        self._last_event = self.env.step_manuual(code = "await updateEntities(bot1, '1');") 
+
+    
+        # self._last_event = self.env.step_manuual(code = "await updateEntities(bot1, '1');") 
         print(self._last_event)
                             
         self.feedback = []
@@ -75,16 +79,18 @@ class MultiVoyager():
     def step(self, actions):
         
         def construct_action_str(actions):
-            # actions = actions + [self.copy_inventory_code]
+            actions = actions + [self.copy_inventory_code]
             action_str = ""
             for i in range(len(actions)):
                 action_str += f"{actions[i]},"
             action_str = action_str[:-1]
             return action_str
         action_str = construct_action_str(actions)
-        self._last_event = self.env.step_manuual(code = f"await Promise.all([{action_str}]);")
-        self._last_event = self.env.step_manuual(code = "await updatePlayerChestInventory(bot3);")   
-        self._last_event = self.env.step_manuual(code = "await updateEntities(bot1, 1);") 
+        self._last_event = self.env.step_manuual(code = f"""
+                                                    await Promise.all([{action_str}]);
+                                                 """)
+        print(self._last_event )
+        # self._last_event = self.env.step_manuual(code = "await updateEntities(bot1, 1);") 
         return self.all_state()
     
     
@@ -178,7 +184,7 @@ class MultiVoyager():
         return True, predicates, args, ignored_actions
 
 if __name__ == '__main__':
-    env = MultiVoyager(33157, 'sk-x')
+    env = MultiVoyager(33577, 'sk-x')
     state = env.all_state()
     print(state) 
     print('###')
