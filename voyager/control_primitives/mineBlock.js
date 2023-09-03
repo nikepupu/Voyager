@@ -12,7 +12,7 @@ async function mineBlock(bot, name, count = 1) {
     }
     const blocks = bot.findBlocks({
         matching: [blockByName.id],
-        maxDistance: 4,
+        maxDistance: 6,
         count: 1024,
     });
     if (blocks.length === 0) {

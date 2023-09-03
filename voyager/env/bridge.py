@@ -111,7 +111,7 @@ class VoyagerEnv(gym.Env):
         if not self.has_reset:
             raise RuntimeError("Environment has not been reset yet")
         self.check_process()
-        self.unpause()
+        # self.unpause()
         data = {
             "code": code,
             "programs": programs,
@@ -122,7 +122,7 @@ class VoyagerEnv(gym.Env):
         if res.status_code != 200:
             raise RuntimeError("Failed to step Minecraft server")
         returned_data = res.json()
-        self.pause()
+        # self.pause()
         returned = {}
         for key, value in returned_data.items():
             returned[key] = json.loads(value)
@@ -153,7 +153,7 @@ class VoyagerEnv(gym.Env):
             "position": options.get("position", None),
         }
 
-        self.unpause()
+        # self.unpause()
         self.mineflayer.stop()
         time.sleep(1)  # wait for mineflayer to exit
 
@@ -162,14 +162,14 @@ class VoyagerEnv(gym.Env):
         self.connected = True
         # All the reset in step will be soft
         self.reset_options["reset"] = "soft"
-        self.pause()
+        # self.pause()
         returned = {}
         for key, value in returned_data.items():
             returned[key] = json.loads(value)
         return returned
 
     def close(self):
-        self.unpause()
+        # self.unpause()
         if self.connected:
             res = requests.post(f"{self.server}/stop")
             if res.status_code == 200:
