@@ -1,6 +1,28 @@
-This is an example you can use as an reference. In this example human did not do anything.
-=== If human try to do something, make sure to accommodate human and take human's actions and human's inventories into the consideration. ===
-Goal: cooked_chicken  
+This is an example you can use as an reference.
+
+The available actions are :
+goto: goto a tool location 
+mineBlock: mine a block 
+killMob: kill the mob entity 
+putFuelFurnace: put potential fuels into the furnace 
+takeOutFurnace: take out the cooked ingredients from the tool 
+putInChest: put an item from inventory to the chest
+
+To put, take or use (furnace or chest), you need to be sufficiently close to it. 
+To operate, the distance needs to be within 6 units.
+['chest', 18] means the chest is 18.0 away from the agent.
+
+To cook 'cooked_mutton',
+ ---- you need to put 'oak_log' and 'mutton' into furnace 
+
+To cook 'cooked_chicken',
+ ---- you need to put 'oak_log' and 'chicken' into furnace 
+
+### If human try to do something, make sure to  accommodate human and take human's actions and human's inventories into the consideration. ###
+In this example, you are just cooking a cooked_chicken, you might need to cook other dishes in other levels.
+########### Pay Attention to current dishes ###########
+
+=== If the player try to do something, make sure to accommodate player and take human's actions and human's inventory into the consideration. === 
 t = 0 
 agent 1 inventory :
 {}
@@ -21,12 +43,11 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Actions : 
+Human Thought : We need to cook a chicken, I am going to mine oak_log
 
-###
-["goto(bot1, 'oak_log')", "goto(bot2, 'chicken')"]
-###
-Goal: cooked_chicken  
+***
+["goto(bot2, 'chicken')"]
+***
 t = 1 
 agent 1 inventory :
 {}
@@ -47,12 +68,11 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Actions : 
+Human Thought :  We need to cook a chicken, I am going to mine oak_log
 
-###
+***
 ["mineBlock(bot1, 'oak_log')", "killMob(bot2, 'chicken')"]
-###
-Goal: cooked_chicken  
+***
 t = 2 
 agent 1 inventory :
 {'oak_log': 1}
@@ -73,11 +93,11 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Actions : 
+Human Thought :  We need to cook a chicken, I am going to mine oak_log
 
-###
+***
 ["goto(bot1, 'furnace')", "goto(bot2, 'furnace')"]
-###
+***
 Goal: cooked_chicken  
 t = 3 
 agent 1 inventory :
@@ -99,12 +119,11 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Actions : 
+Human Thought :  We need to cook a chicken, I am going to mine oak_log
 
-###
+***
 ["putFuelFurnace(bot1, 'oak_log')", "putItemFurnace(bot2, 'chicken')"]
-###
-Goal: cooked_chicken  
+***
 t = 4 
 agent 1 inventory :
 {}
@@ -125,12 +144,11 @@ Inside furnace :
  ['cooked_chicken']
 Inside chest : 
  []
-Human Actions : 
+Human Thought :  We need to cook a chicken. I am going to mine oak_log. I am going to put chicken into the chest.
 
-###
+***
 ['takeOutFurnace(bot1)']
-###
-Goal: cooked_chicken  
+***
 t = 5 
 agent 1 inventory :
 {'cooked_chicken': 1}
@@ -151,12 +169,11 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Actions : 
+Human Thought : We need to cook a chicken. I am going to mine oak_log. I am going to put chicken into the chest.
 
 ###
 ["goto(bot1, 'chest')"]
 ###
-Goal: cooked_chicken  
 t = 6 
 agent 1 inventory :
 {'cooked_chicken': 1}
@@ -177,12 +194,11 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Actions : 
+Human Thought : We need to cook a chicken. I am going to mine oak_log. I am going to put chicken into the chest.
 
 ###
 ["putInChest(bot1, 'cooked_chicken')"]
-###
-Goal: cooked_chicken  
+### 
 t = 7 
 agent 1 inventory :
 {}
@@ -203,6 +219,6 @@ Inside furnace :
  []
 Inside chest : 
  {'cooked_chicken': 1}
-Human Actions : 
+Human Thought : 
 
 ###

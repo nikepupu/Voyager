@@ -22,7 +22,8 @@ async function goto(bot, locationName) {
     } else {
         if(!is_entity){
             await bot.pathfinder.goto(
-                new GoalLookAtBlock(block.position, bot.world)
+                // new GoalLookAtBlock(block.position, bot.world)
+                new GoalGetToBlock(block.position.x, block.position.y, block.position.z)
             );
         } else {
             await bot.pathfinder.goto(

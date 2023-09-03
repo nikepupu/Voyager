@@ -54,12 +54,13 @@ function getSurroundingBlocks(bot, x_distance, y_distance, z_distance) {
             for (let z = -z_distance; z <= z_distance; z++) {
                 const block = bot.blockAt(bot.entity.position.offset(x, y, z));
                 if (block && block.type !== 0) {
-                    if (['grass_block', 'dirt', 'bedrock'].includes(block.name)) { 
-                        surroundingBlocks.add(block.name);
-                    }
-                    else{
+                    if (['oak_log'].includes(block.name)) { 
                         let dist = Math.sqrt(x * x + y * y + z * z);
                         surroundingBlocks.add([block.name, dist]);
+                    }
+                    else{
+                        
+                        surroundingBlocks.add(block.name);
                     }
                 }
             }

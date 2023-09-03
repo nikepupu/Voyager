@@ -25,8 +25,25 @@ async function updateEntities(bot, level) {
             }
         ]
 
+    } else if (level == '2') {
+        entitiesList = [
+            {
+                name: 'sheep',
+                position: new Vec3(-245, 32, -105)
+            },
+            {
+                name: 'chicken',
+                position: new Vec3(-245, 32, -108)
+            }
+        ];
+        voxel_list = [
+            {
+                name: 'oak_log',
+                position: new Vec3(-227, 32, -107)
+            }
+        ]
     }
-    
+    care_about_entities = ['sheep', 'chicken', 'oak_log'];
 
     for(let entity_target of entitiesList) {
         let target_pos = entity_target.position;
@@ -59,7 +76,7 @@ async function updateEntities(bot, level) {
         let target_pos = voxel_target.position;
         let name = voxel_target.name;
         let block = bot.blockAt(target_pos);
-        if (block.name !== name) {
+        if (!block || block.name !== name) {
             bot.chat(`/setblock ${target_pos.x} ${target_pos.y} ${target_pos.z} ${name}`);
         }
     }

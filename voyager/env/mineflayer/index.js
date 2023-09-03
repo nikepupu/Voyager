@@ -106,6 +106,7 @@ app.post("/start", (req, res) => {
 
         bot1.chat('/time set day');
         bot1.chat('/gamerule doDaylightCycle false');
+        bot1.chat('/weather clear');
 
         
  
