@@ -128,7 +128,7 @@ async function updatePlayerChestInventory(bot, chestx, chesty, chestz){
    
     let chestPosition = new Vec3(chestx, chesty, chestz);
     const chestBlock = bot.blockAt(chestPosition);
-    bot.chat('/data modify block -216 32 22 Items set from entity nikepupu9 Inventory');
+    bot.chat('/data modify block -217 32 -51 Items set from entity nikepupu9 Inventory');
     const chest = await bot.openContainer(chestBlock);
     const items = chest.containerItems();
     await bot.waitForTicks(40);

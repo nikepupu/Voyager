@@ -20,8 +20,9 @@ To cook 'cooked_chicken',
 
 ### If human try to do something, make sure to  accommodate human and take human's actions and human's inventories into the consideration. ###
 In this example, you are just cooking a cooked_chicken, you might need to cook other dishes in other levels.
-########### Pay Attention to current dishes ###########
-
+########### Pay Extreme Attention to Human Thought ###########
+########### Pay Extreme Attention to Human Thought ###########
+########### Pay Extreme Attention to Human Thought ###########
 === If the player try to do something, make sure to accommodate player and take human's actions and human's inventory into the consideration. === 
 t = 0 
 agent 1 inventory :

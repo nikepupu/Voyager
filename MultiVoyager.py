@@ -26,7 +26,7 @@ class MultiVoyager():
                 await bot1.chat('/gamerule doMobSpawning false');
                 await bot1.chat('/tp @s -235 32 -109');
                 await bot2.chat('/tp @s -229 32 -108');
-                await bot3.chat('/tp @s -216 32 -24');
+                await bot3.chat('/tp @s -217 32 -53');
                 await bot1.chat('/kill @e[type=!player]');
                 await bot1.chat('/kill @e[type=item]');  
         """
@@ -35,19 +35,19 @@ class MultiVoyager():
         # await bot1.chat('/setblock 2 -60 4 minecraft:oak_log');
         # await bot1.chat('/fill 20 -60 20 20 -60 20 minecraft:air');  
 
-        self.chestx = -216
+        self.chestx = -217
         self.chesty = 32
-        self.chestz = -22
+        self.chestz = -51
 
         code += """
                 await bot1.chat('/setblock -236 32 -103 minecraft:furnace');
                 await bot1.chat('/setblock -230 33 -114 minecraft:chest');
-                await bot1.chat('/setblock -216 32 -22 minecraft:chest');
+                await bot1.chat('/setblock -217 32 -51 minecraft:chest');
                 await bot1.chat('/setblock -226 39 -119 minecraft:air');
             """
         # this is used inside promise.call, cannot have ; 
-        self.copy_inventory_code = "updatePlayerChestInventory(bot3, -216, 32, -22)"
-        code += "await updatePlayerChestInventory(bot3, -216, 32, -22);"
+        self.copy_inventory_code = "updatePlayerChestInventory(bot3, -217, 32, -51)"
+        code += "await updatePlayerChestInventory(bot3, -217, 32, -51);"
         code += f"await bot1.chat('/experience set {self.username} 0 levels');"
         self._last_event = self.env.step_manuual(code = code)
 
@@ -140,12 +140,15 @@ class MultiVoyager():
             prompt += f" {value}"
 
         prompt += '\n'
-        prompt += f'Human Actions : {self.human_actions}\n'
+        prompt += f'Human Thought : {self.human_actions}\n'
         prompt += f'Agent Actions: \n'
         return prompt
     
     def set_human_action(self, human_actions):
-        self.human_actions = human_actions
+        self.human_actions += human_actions
+    
+    def clear_human_action(self):
+        self.human_actions = ""
 
     def step(self, actions):
             
