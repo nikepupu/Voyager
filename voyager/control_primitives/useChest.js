@@ -132,6 +132,7 @@ async function updatePlayerChestInventory(bot, chestx, chesty, chestz){
     const chest = await bot.openContainer(chestBlock);
     const items = chest.containerItems();
     await bot.waitForTicks(40);
+
     if (items.length > 0) {
         const itemNames = items.reduce((acc, obj) => {
             if (acc[obj.name]) {
@@ -146,7 +147,6 @@ async function updatePlayerChestInventory(bot, chestx, chesty, chestz){
         bot.emit("closeChest", {}, chestBlock.position);
     }
 
-    
     await chest.close();
     
 }

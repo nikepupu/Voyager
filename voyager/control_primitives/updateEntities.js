@@ -32,9 +32,34 @@ async function updateEntities(bot, level) {
                 position: new Vec3(-245, 32, -105)
             },
             {
+                name: 'sheep',
+                position: new Vec3(-250, 32, -103)
+            },
+            {
+                name: 'sheep',
+                position: new Vec3(-248, 32, -107)
+            },
+            {
                 name: 'chicken',
                 position: new Vec3(-245, 32, -108)
+            },
+            {
+                name: 'chicken',
+                position: new Vec3(-247, 32, -110)
+            },
+            {
+                name: 'chicken',
+                position: new Vec3(-239, 32, -108)
+            },
+            {
+                name: 'pig',
+                position: new Vec3(-249, 32, -112)
+            },
+            {
+                name: 'cow',
+                position: new Vec3(-248, 32, -115)
             }
+
         ];
         voxel_list = [
             {
@@ -43,7 +68,7 @@ async function updateEntities(bot, level) {
             }
         ]
     }
-    care_about_entities = ['sheep', 'chicken', 'oak_log'];
+    care_about_entities = ['sheep', 'chicken', 'oak_log', 'pig', 'cow'];
 
     for(let entity_target of entitiesList) {
         let target_pos = entity_target.position;
@@ -67,6 +92,10 @@ async function updateEntities(bot, level) {
                 bot.chat('/summon sheep ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1}');
             } else if (name === 'chicken') {
                 bot.chat('/summon chicken ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
+            } else if (name === 'pig') {
+                bot.chat('/summon pig ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1"}');
+            } else if (name === 'cow') {
+                bot.chat('/summon cow ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1"}');
             }
         }
      

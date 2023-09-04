@@ -37,13 +37,13 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             )
             break
         except openai.OpenAIError as e:
-            print(e)
+            # print(e)
             
             total_trials += 1
             time.sleep(0.1)
     return response.choices[0].message.content
 
-env = MultiVoyager(40725, 'sk-x')
+env = MultiVoyager(45681, 'sk-x')
 
 asset_file = './multi_voyager/prompt/prompt.txt'
 example = open(asset_file, 'r').read().split('***\n')
@@ -55,7 +55,7 @@ for idx, exp in enumerate(example):
         example_history.append(("assistant", exp))
 
 interaction_history = []
-for _ in range(30):
+while True:
     prompt = env.all_state()
     interaction_history.append(("user", prompt))
 
