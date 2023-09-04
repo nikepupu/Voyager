@@ -55,7 +55,7 @@ class MultiVoyager():
         self._last_event = self.env.step_manuual(code = "await updateEntities(bot1, '2');") 
                             
         self.feedback = ""
-        self.human_actions = "Help me to cook some chicken."
+        self.human_dialogs_history = ""
 
         self.task_list = ['cooked_chicken', 'cooked_mutton']
 
@@ -66,7 +66,7 @@ class MultiVoyager():
 
         self.last_actions = []
 
-        self.goal = 'cooked_chicken'
+        self.goal = ''
 
         
 
@@ -116,7 +116,7 @@ class MultiVoyager():
         # for goal in self.goals:
         #     prompt += f"{goal[0]} \n"
 
-        prompt = f"Goal: {self.goal} \n"
+        prompt = f"Human Current Instruction: {self.goal} \n"
         prompt += f"Environment Feedback : {self.feedback} \n"
         prompt += f"t = {self.time_step} \n\n"
         for i in range(2):
@@ -148,12 +148,13 @@ class MultiVoyager():
             prompt += f" {value}"
 
         prompt += '\n'
-        prompt += f'Human Thought : {self.human_actions}\n'
+        prompt += f'Human Instructions Hisotry : {self.human_dialogs_history}\n'
         prompt += f'Agent Actions: \n'
         return prompt
     
     def set_human_action(self, human_actions = ""):
-        self.human_actions += " " + human_actions
+        self.goal = human_actions
+        self.human_dialogs_history += " " + human_actions
     
     def clear_human_action(self):
         self.human_actions = ""
@@ -180,7 +181,7 @@ class MultiVoyager():
                                                     await Promise.all([{action_str}]);
                                                  """)
         self.time_step += 1
-        print(self._last_event)
+        
         for event in self._last_event['bot1']:
             if event[0] == 'onChat':
                 message = ' For bot1 ' +   event[1]['onChat']

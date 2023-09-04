@@ -4,6 +4,10 @@ import time
 import os
 import sys
 from MultiVoyager import MultiVoyager
+from whisper_mic.whisper_mic import WhisperMic
+import queue
+import threading
+
 
 def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
     # history = [('user', context)] + history    
@@ -21,9 +25,15 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
                 'role': 'assistant',
                 'content': i[1]
             })
+        elif i[0] == 'system':
+            chat_history.append({
+                'role': 'system',
+                'content': i[1]
+            })
         else:
             raise NotImplementedError
     # openai.organization = 'org-m2iXhDFphTS3ttoq3L6gNNA0'
+    openai.api_key = 
 
     total_trials = 0
     while True:
@@ -43,11 +53,16 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             time.sleep(0.1)
     return response.choices[0].message.content
 
-env = MultiVoyager(45681, 'sk-x')
+env = MultiVoyager(33253, 'sk-x')
 
-asset_file = './multi_voyager/prompt/prompt.txt'
+asset_file = './multi_voyager/prompt/prompt_human.txt'
 example = open(asset_file, 'r').read().split('***\n')
 example_history = []
+message = """ You helping humans to play minecraft.
+ Please follow human instructions. 
+ When there is no instruction, please do not do anything."""
+
+example_history.append(("system", message))
 for idx, exp in enumerate(example):
     if idx % 2 == 0:
         example_history.append(("user", exp))
@@ -55,7 +70,28 @@ for idx, exp in enumerate(example):
         example_history.append(("assistant", exp))
 
 interaction_history = []
+
+
+audio_queue = queue.Queue()
+mic = WhisperMic()
+def listen():
+    while True:
+        result = mic.listen(2)
+        print('result: ', result)
+        audio_queue.put_nowait(result)
+x = threading.Thread(target=listen, daemon=True).start()
+
 while True:
+    # get everything from the audio queue
+    human_instructiosn = []
+    while not audio_queue.empty():
+        human_instructiosn.append(audio_queue.get(False))
+    
+    total_instr = ""
+    for instr in human_instructiosn:
+        total_instr += instr + " "
+    
+    env.set_human_action(total_instr)
     prompt = env.all_state()
     interaction_history.append(("user", prompt))
 
