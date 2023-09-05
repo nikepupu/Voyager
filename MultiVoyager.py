@@ -107,6 +107,8 @@ class MultiVoyager():
 
         self.goal = ''
 
+        self.human_actions_buffer = ""
+
         
 
     def goal_checking_prompt(self):
@@ -192,16 +194,22 @@ class MultiVoyager():
         return prompt
     
     def set_human_action(self, human_actions = ""):
-        self.goal = human_actions
-        self.human_dialogs_history += " " + human_actions
+        self.human_actions_buffer +=  human_actions
+        
     
     def clear_human_action(self):
         self.human_actions = ""
 
+    def buffer_human_action(self):
+        # put buffer into history
+        if self.human_actions_buffer:
+            self.human_dialogs_history += self.human_actions_buffer
+            self.goal = self.human_actions_buffer
+            self.human_actions_buffer = ""
+
     def step(self, actions):
             
-        # if self.time_step  % 12 == 0 and self.time_step != 0:
-        #     self.goals.append((self.rng.choice(self.task_list), 12))
+        self.buffer_human_action()
 
         self.feedback = ""
         def construct_action_str(actions):

@@ -1,14 +1,68 @@
 
 import openai
 import time
-import os
-import sys
 from MultiVoyager import MultiVoyager
-import queue
 import threading
 import pyautogui
-from whisper_mic.whisper_mic import WhisperMic
+import time
+import azure.cognitiveservices.speech as speechsdk
+from pynput.keyboard import Key, Controller
+import pynput
+import os
 
+stop_recognition = threading.Event()
+my_keyboard = Controller()
+
+def type_in_chat(message):  
+    pyautogui.press('t')
+    pyautogui.press('backspace')
+    pyautogui.write(message, interval=0.00)
+    time.sleep(0.2)
+    pyautogui.press('enter')
+
+def recognize_from_microphone():
+    # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+    speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
+    speech_config.speech_recognition_language="en-US"
+
+    audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+
+    print("Speak into your microphone.")
+    while not stop_recognition.is_set():
+        speech_recognition_result = speech_recognizer.recognize_once_async().get()
+
+        if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
+            print("Recognized: {}".format(speech_recognition_result.text))
+            type_in_chat(speech_recognition_result.text)
+            env.set_human_action(speech_recognition_result.text)
+            return speech_recognition_result.text
+        elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
+            print("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
+        elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
+            cancellation_details = speech_recognition_result.cancellation_details
+            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
+            if cancellation_details.reason == speechsdk.CancellationReason.Error:
+                print("Error details: {}".format(cancellation_details.error_details))
+                print("Did you set the speech resource key and region values?")
+
+        return None
+    
+def on_press(key):
+    global stop_recognition
+    if key == Key.delete:
+        stop_recognition.clear()
+        recognize_from_microphone()
+
+def on_release(key):
+    global stop_recognition
+    if key == Key.delete:
+        stop_recognition.set()
+
+
+def start_listener():
+    with pynput.keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
 def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
     # history = [('user', context)] + history    
 
@@ -53,7 +107,9 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             time.sleep(0.1)
     return response.choices[0].message.content
 
-env = MultiVoyager(36621, 'sk-x')
+env = MultiVoyager(39357, 'sk-x')
+listener_thread = threading.Thread(target=start_listener)
+listener_thread.start()
 
 asset_file = './multi_voyager/prompt/prompt_human.txt'
 example = open(asset_file, 'r').read().split('***\n')
@@ -77,53 +133,23 @@ for idx, exp in enumerate(example):
 interaction_history = []
 
 
-audio_queue = queue.Queue()
-mic = WhisperMic(model='base', english=True, device='cuda')
-def listen():
-    while True:
-        result = mic.listen()
-        type_in_chat(result)
-        # audio_queue.put_nowait(result) 
-        env.set_human_action(result)
-x = threading.Thread(target=listen, daemon=True).start()
-
-
-def type_in_chat(message):
-    pyautogui.press('t')
-    time.sleep(0.1)
-    pyautogui.press('backspace')
-    pyautogui.write(message)
-    time.sleep(0.8)
-    pyautogui.press('enter')
-
 while True:
-    # get everything from the audio queue
-    # human_instructiosn = []
-    # while not audio_queue.empty():
-    #     human_instructiosn.append(audio_queue.get(False))
-    
-    # total_instr = ""
-    # for instr in human_instructiosn:
-    #     total_instr += instr + " "
-    
-    # if total_instr != "":
-    #     type_in_chat(total_instr)
-    
-    # env.set_human_action(total_instr)
-    prompt = env.all_state()
-    interaction_history.append(("user", prompt))
+        if env.human_actions_buffer or env.human_dialogs_history:
+            env.buffer_human_action()
+            prompt = env.all_state()
+            interaction_history.append(("user", prompt))
 
-    if len(interaction_history) > 5:
-        interaction_history = interaction_history[2:]
-    print(prompt)
-    full_prompt = example_history + interaction_history
-    plan = chat_llm(full_prompt, temperature=0.0, max_tokens=100, model='gpt-4', context='')
-    print(plan)
-    example_history.append(("assistant", plan))
-    
-    interaction_history.append(("assistant", plan))
-    plan = eval(plan)
-    env.step(plan)
+            if len(interaction_history) > 5:
+                interaction_history = interaction_history[2:]
+            print(prompt)
+            full_prompt = example_history + interaction_history
+            plan = chat_llm(full_prompt, temperature=0.0, max_tokens=100, model='gpt-4', context='')
+            print(plan)
+            example_history.append(("assistant", plan))
+            
+            interaction_history.append(("assistant", plan))
+            plan = eval(plan)
+            env.step(plan)
 
     
 
