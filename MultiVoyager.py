@@ -2,8 +2,47 @@ from voyager import Voyager
 from typing import List
 import time
 import random
-from collections import Counter
 import time
+import pyautogui
+import threading
+from whisper_mic.whisper_mic import WhisperMic
+import queue
+import threading
+import time
+import os
+import azure.cognitiveservices.speech as speechsdk
+from pynput.keyboard import Key, Controller
+import speech_recognition as sr
+import pynput
+
+stop_recognition = threading.Event()
+my_keyboard = Controller()
+
+
+def recognize_from_microphone():
+        # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+        speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
+        speech_config.speech_recognition_language="en-US"
+
+        audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+        speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+
+        print("Speak into your microphone.")
+        speech_recognition_result = speech_recognizer.recognize_once_async().get()
+
+        if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
+            print("Recognized: {}".format(speech_recognition_result.text))
+            return speech_recognition_result.text
+        elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
+            print("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
+        elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
+            cancellation_details = speech_recognition_result.cancellation_details
+            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
+            if cancellation_details.reason == speechsdk.CancellationReason.Error:
+                print("Error details: {}".format(cancellation_details.error_details))
+                print("Did you set the speech resource key and region values?")
+        return None
+
 class MultiVoyager():
     def __init__(self, mc_port, openai_api_key, username='nikepupu9') -> None:
         self.mc_port = mc_port
@@ -210,10 +249,66 @@ class MultiVoyager():
         
         return self.all_state()
     
+def type_in_chat(message):  
+    pyautogui.press('t')
+    pyautogui.press('backspace')
+    pyautogui.write(message, interval=0.00)
+    time.sleep(0.2)
+    pyautogui.press('enter')
+
+def recognize_from_microphone():
+    # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+    speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
+    speech_config.speech_recognition_language="en-US"
+
+    audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+
+    print("Speak into your microphone.")
+    while not stop_recognition.is_set():
+        speech_recognition_result = speech_recognizer.recognize_once_async().get()
+
+        if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
+            print("Recognized: {}".format(speech_recognition_result.text))
+            type_in_chat(speech_recognition_result.text)
+            env.set_human_action(speech_recognition_result.text)
+            return speech_recognition_result.text
+        elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
+            print("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
+        elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
+            cancellation_details = speech_recognition_result.cancellation_details
+            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
+            if cancellation_details.reason == speechsdk.CancellationReason.Error:
+                print("Error details: {}".format(cancellation_details.error_details))
+                print("Did you set the speech resource key and region values?")
+
+        return None
+  
+def on_press(key):
+    global stop_recognition
+    if key == Key.delete:
+        stop_recognition.clear()
+        recognize_from_microphone()
+
+def on_release(key):
+    global stop_recognition
+    if key == Key.delete:
+        stop_recognition.set()
+
+
+def start_listener():
+    with pynput.keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
 
 if __name__ == '__main__':
+    
 
-    env = MultiVoyager(33253, 'sk-x')
+    env = MultiVoyager(39357, 'sk-x')
+
+    # Start the listener in a separate thread
+    listener_thread = threading.Thread(target=start_listener)
+    listener_thread.start()
+    
     def case1():
         state = env.all_state()
         print(state) 
@@ -270,9 +365,7 @@ if __name__ == '__main__':
 
     def case3():
         state = env.all_state()
-        print(state)
-      
-        time.sleep(15.0)
+        time.sleep(20.0)
         actions = [ "goto(bot2, 'chicken')", "goto(bot1, 'sheep')"]
         env.set_human_action("Let's cook chicken. I will get the oak_log")
         state = env.step(actions)
@@ -282,7 +375,6 @@ if __name__ == '__main__':
         state = env.step(actions)
         time.sleep(2.0)
         
-       
         actions = [ "goto(bot2, 'furnace')", ""]
         env.set_human_action("")
         state = env.step(actions)
@@ -299,6 +391,8 @@ if __name__ == '__main__':
         actions = ["putItemFurnace(bot1, 'mutton')"]
         env.set_human_action("")
         state = env.step(actions)
+
+        time.sleep(3.0)
 
         actions = ["takeOutFurnace(bot1)"]
         env.set_human_action("You can take the mutton to chest.")
@@ -329,7 +423,7 @@ if __name__ == '__main__':
         actions = [ "putItemFurnace(bot2, 'mutton')", "putFuelFurnace(bot1, 'oak_log')"]
         env.set_human_action("I'll take the mutton to the chest, can you get me some more wood for the grilled chicken.")
         state = env.step(actions)
-        time.sleep(2.0)
+        time.sleep(5.0)
 
         actions = [ "goto(bot1, 'oak_log')"]
         env.set_human_action("")

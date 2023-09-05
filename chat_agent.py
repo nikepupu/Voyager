@@ -4,10 +4,10 @@ import time
 import os
 import sys
 from MultiVoyager import MultiVoyager
-from whisper_mic.whisper_mic import WhisperMic
 import queue
 import threading
 import pyautogui
+from whisper_mic.whisper_mic import WhisperMic
 
 def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
     # history = [('user', context)] + history    
@@ -53,7 +53,7 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             time.sleep(0.1)
     return response.choices[0].message.content
 
-env = MultiVoyager(33253, 'sk-x')
+env = MultiVoyager(36621, 'sk-x')
 
 asset_file = './multi_voyager/prompt/prompt_human.txt'
 example = open(asset_file, 'r').read().split('***\n')
@@ -78,36 +78,38 @@ interaction_history = []
 
 
 audio_queue = queue.Queue()
-mic = WhisperMic()
+mic = WhisperMic(model='base', english=True, device='cuda')
 def listen():
     while True:
-        result = mic.listen(2)
-        audio_queue.put_nowait(result)
+        result = mic.listen()
+        type_in_chat(result)
+        # audio_queue.put_nowait(result) 
+        env.set_human_action(result)
 x = threading.Thread(target=listen, daemon=True).start()
 
 
 def type_in_chat(message):
     pyautogui.press('t')
-    time.sleep(0.5)
+    time.sleep(0.1)
     pyautogui.press('backspace')
     pyautogui.write(message)
-    time.sleep(0.5)
+    time.sleep(0.8)
     pyautogui.press('enter')
 
 while True:
     # get everything from the audio queue
-    human_instructiosn = []
-    while not audio_queue.empty():
-        human_instructiosn.append(audio_queue.get(False))
+    # human_instructiosn = []
+    # while not audio_queue.empty():
+    #     human_instructiosn.append(audio_queue.get(False))
     
-    total_instr = ""
-    for instr in human_instructiosn:
-        total_instr += instr + " "
+    # total_instr = ""
+    # for instr in human_instructiosn:
+    #     total_instr += instr + " "
     
-    if total_instr != "":
-        type_in_chat(total_instr)
+    # if total_instr != "":
+    #     type_in_chat(total_instr)
     
-    env.set_human_action(total_instr)
+    # env.set_human_action(total_instr)
     prompt = env.all_state()
     interaction_history.append(("user", prompt))
 
