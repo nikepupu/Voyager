@@ -213,7 +213,7 @@ class MultiVoyager():
 
 if __name__ == '__main__':
 
-    env = MultiVoyager(34771, 'sk-x')
+    env = MultiVoyager(33253, 'sk-x')
     def case1():
         state = env.all_state()
         print(state) 
@@ -270,6 +270,7 @@ if __name__ == '__main__':
 
     def case3():
         state = env.all_state()
+        print(state)
       
         time.sleep(15.0)
         actions = [ "goto(bot2, 'chicken')", "goto(bot1, 'sheep')"]

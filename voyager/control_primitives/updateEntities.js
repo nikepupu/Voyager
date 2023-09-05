@@ -28,6 +28,18 @@ async function updateEntities(bot, level) {
     } else if (level == '2') {
         entitiesList = [
             {
+                name: 'pig',
+                position: new Vec3(-229, 32, -110)
+            },
+            {
+                name: 'cow',
+                position: new Vec3(-248, 32, -111)
+            },
+            {
+                name: 'cow',
+                position: new Vec3(-226, 32, -90)
+            },
+            {
                 name: 'sheep',
                 position: new Vec3(-245, 32, -105)
             },
@@ -38,6 +50,10 @@ async function updateEntities(bot, level) {
             {
                 name: 'sheep',
                 position: new Vec3(-248, 32, -107)
+            },
+            {
+                name: 'sheep',
+                position: new Vec3(-239, 32, -89)
             },
             {
                 name: 'chicken',
@@ -52,13 +68,21 @@ async function updateEntities(bot, level) {
                 position: new Vec3(-239, 32, -108)
             },
             {
-                name: 'pig',
-                position: new Vec3(-249, 32, -112)
+                name: 'chicken',
+                position: new Vec3(-231, 32, -102)
             },
             {
-                name: 'cow',
-                position: new Vec3(-248, 32, -115)
-            }
+                name: 'chicken',
+                position: new Vec3(-229, 32, -89)
+            },
+            {
+                name: 'chicken',
+                position: new Vec3(-230, 32, -91)
+            },
+            {
+                name: 'pig',
+                position: new Vec3(-238, 32, -94)
+            },
 
         ];
         voxel_list = [
@@ -75,7 +99,7 @@ async function updateEntities(bot, level) {
         let name = entity_target.name;
 
         const entities = bot.entities;
-        if (!entities) return {};
+        if (!entities) break;
     
         found = false;
         for (const id in entities) {
@@ -92,10 +116,10 @@ async function updateEntities(bot, level) {
                 bot.chat('/summon sheep ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1}');
             } else if (name === 'chicken') {
                 bot.chat('/summon chicken ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
-            } else if (name === 'pig') {
-                bot.chat('/summon pig ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1"}');
-            } else if (name === 'cow') {
-                bot.chat('/summon cow ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1"}');
+            } else if (name == 'pig') {
+                bot.chat('/summon pig ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1}');
+            } else if (name == 'cow') {
+                bot.chat('/summon cow ' + target_pos.x + ' ' + target_pos.y + ' ' + target_pos.z + ' {NoAI:1}');
             }
         }
      

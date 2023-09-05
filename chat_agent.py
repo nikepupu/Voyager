@@ -7,7 +7,7 @@ from MultiVoyager import MultiVoyager
 from whisper_mic.whisper_mic import WhisperMic
 import queue
 import threading
-
+import pyautogui
 
 def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
     # history = [('user', context)] + history    
@@ -58,9 +58,14 @@ env = MultiVoyager(33253, 'sk-x')
 asset_file = './multi_voyager/prompt/prompt_human.txt'
 example = open(asset_file, 'r').read().split('***\n')
 example_history = []
-message = """ You helping humans to play minecraft.
- Please follow human instructions. 
- When there is no instruction, please do not do anything."""
+message = """ **Revised Instruction**:
+
+You are assisting humans in playing Minecraft. Always adhere to the following guidelines:
+
+1. Prioritize following human instructions.
+2. If there are no provided instructions, remain inactive.
+3. If a human player expresses a desire to perform an action, do not intervene or take over. Allow the player to engage and enjoy the experience on their own.
+"""
 
 example_history.append(("system", message))
 for idx, exp in enumerate(example):
@@ -77,9 +82,17 @@ mic = WhisperMic()
 def listen():
     while True:
         result = mic.listen(2)
-        print('result: ', result)
         audio_queue.put_nowait(result)
 x = threading.Thread(target=listen, daemon=True).start()
+
+
+def type_in_chat(message):
+    pyautogui.press('t')
+    time.sleep(0.5)
+    pyautogui.press('backspace')
+    pyautogui.write(message)
+    time.sleep(0.5)
+    pyautogui.press('enter')
 
 while True:
     # get everything from the audio queue
@@ -90,6 +103,9 @@ while True:
     total_instr = ""
     for instr in human_instructiosn:
         total_instr += instr + " "
+    
+    if total_instr != "":
+        type_in_chat(total_instr)
     
     env.set_human_action(total_instr)
     prompt = env.all_state()
