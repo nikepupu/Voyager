@@ -16,6 +16,12 @@ To cook 'cooked_mutton',
 To cook 'cooked_chicken',
  ---- you need to put 'oak_log' and 'chicken' into furnace 
 
+To cook 'cooked_porkchop',
+ ---- you need to put 'oak_log' and 'porkchop' into furnace
+
+To cook 'steak',
+ ---- you need to put 'oak_log' and 'beef' into furnace
+
 This is an example you can use as an reference. In this example human did not do anything.
 ### If human try to do something, make sure to  accommodate human and take human's actions and human's inventories into the consideration. ###
 ########### Pay Attention to current dishes ###########

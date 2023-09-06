@@ -107,15 +107,14 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             time.sleep(0.1)
     return response.choices[0].message.content
 
-env = MultiVoyager(39357, 'sk-x')
+env = MultiVoyager(37879, 'sk-x')
 listener_thread = threading.Thread(target=start_listener)
 listener_thread.start()
 
 asset_file = './multi_voyager/prompt/prompt_human.txt'
 example = open(asset_file, 'r').read().split('***\n')
 example_history = []
-message = """ **Revised Instruction**:
-
+message = """ 
 You are assisting humans in playing Minecraft. Always adhere to the following guidelines:
 
 1. Prioritize following human instructions.
