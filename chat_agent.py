@@ -8,10 +8,10 @@ import queue
 import threading
 import pyautogui
 from whisper_mic.whisper_mic import WhisperMic
+key_id = 0
 
 def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
     # history = [('user', context)] + history    
-
 
     chat_history = []
     for i in history:
@@ -33,7 +33,6 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
         else:
             raise NotImplementedError
     # openai.organization = 'org-m2iXhDFphTS3ttoq3L6gNNA0'
-    openai.api_key = 
 
     total_trials = 0
     while True:
@@ -53,7 +52,20 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             time.sleep(0.1)
     return response.choices[0].message.content
 
-env = MultiVoyager(36621, 'sk-x')
+def next_key():
+    global key_id
+    with open('./key.txt', 'r') as f:
+        all_keys = f.read().split('\n')
+    # all_keys = open('./key.txt', 'r').read().split('\n')
+    num = len(all_keys)
+    key_id += 1
+
+    if key_id >= num:
+        key_id -= num
+
+    openai.api_key = all_keys[key_id%num] #random.choice(all_keys)
+
+env = MultiVoyager(39357, 'sk-x')
 
 asset_file = './multi_voyager/prompt/prompt.txt'
 example = open(asset_file, 'r').read().split('***\n')
@@ -75,7 +87,7 @@ for idx, exp in enumerate(example):
 interaction_history = []
 
 
-while True:
+for _ in range(60):
     prompt = env.all_state()
     interaction_history.append(("user", prompt))
 
@@ -90,3 +102,5 @@ while True:
     interaction_history.append(("assistant", plan))
     plan = eval(plan)
     env.step(plan)
+    print('accomplished tasks: ', env.accomplished_goals)
+    print('failed tasks: ', env.failed_goals)

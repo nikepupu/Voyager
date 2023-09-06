@@ -51,7 +51,7 @@ class MultiVoyager():
                 await bot1.chat('/setblock -226 39 -119 minecraft:air');
             """
         # this is used inside promise.call, cannot have ; 
-        self.copy_inventory_code = "updatePlayerChestInventory(bot3, -217, 32, -51)"
+        # self.copy_inventory_code = "updatePlayerChestInventory(bot3, -217, 32, -51)"
         # code += "await updatePlayerChestInventory(bot3, -217, 32, -51);"
         # code += f"await bot1.chat('/experience set {self.username} 0 levels');"
         self._last_event = self.env.step_manuual(code = code)
@@ -64,7 +64,9 @@ class MultiVoyager():
         self.task_list = ['cooked_chicken', 'cooked_mutton']
 
         self.rng = random.Random(123)
-        self.goals = [(self.rng.choice(self.task_list), 12)]
+        self.task_interval = 10
+        self.task_lifetime = int(self.task_interval * 1.5)
+        self.goals = [(self.rng.choice(self.task_list), self.task_lifetime)]
         self.accomplished_goals = []
         self.failed_goals = []
 
@@ -113,15 +115,34 @@ class MultiVoyager():
         prompt += f'Agent Actions: \n'
         return prompt
     
+    
 
     def step(self, actions):
             
-        if self.time_step  % 10 == 0 and self.time_step != 0:
-            self.goals.append((self.rng.choice(self.task_list), 12))
-
+        if ( int(self.time_step)  % self.task_interval) == 0 and int(self.time_step) != 0:
+            self.goals.append((self.rng.choice(self.task_list), self.task_lifetime))
+        
+        def extract_function_names(calls):
+            import re
+            function_names = []
+            for call in calls:
+                match = re.match(r"(\w+)\(", call)
+                if match:
+                    function_names.append(match.group(1))
+            return function_names
+        
+        function_names = extract_function_names(actions)
+        valid = True
         self.feedback = ""
+        for function_name in function_names:
+            if function_name not in ['goto', 'mineBlock', 'killMob', 'putItemFurnace', 'putFuelFurnace', 'takeOutFurnace', 'putInChest']:
+                valid = False
+                self.feedback += f'Function {function_name} is not supported. '
+
+
+        
         def construct_action_str(actions):
-            actions = actions + [self.copy_inventory_code,  "updateEntities(bot1, '2' )"]
+            actions = actions + ["updateEntities(bot1, '2' )"]
             action_str = ""
             for i in range(len(actions)):
                 action_str += f"{actions[i]},"
@@ -129,11 +150,12 @@ class MultiVoyager():
             return action_str
         action_str = construct_action_str(actions)
         if action_str == self.last_actions:
-            self.feedback= 'You have already done this action last time, please do something else.'
+            self.feedback += 'You have already done this action last time, please do something else.'
 
         self.last_actions = action_str
-        self._last_event = self.env.step_manuual(code = f"""
-                                                    await Promise.all([{action_str}]);
+        if valid:
+            self._last_event = self.env.step_manuual(code = f"""
+                                                        await Promise.all([{action_str}]);
                                                  """)
         self.time_step += 1
         
