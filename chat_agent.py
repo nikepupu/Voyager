@@ -55,16 +55,14 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
 
 env = MultiVoyager(36621, 'sk-x')
 
-asset_file = './multi_voyager/prompt/prompt_human.txt'
+asset_file = './multi_voyager/prompt/prompt.txt'
 example = open(asset_file, 'r').read().split('***\n')
 example_history = []
-message = """ **Revised Instruction**:
+message = """ 
+You are allocating two agents to playing a cooking game in Minecraft. Always adhere to the following guidelines:
 
-You are assisting humans in playing Minecraft. Always adhere to the following guidelines:
-
-1. Prioritize following human instructions.
-2. If there are no provided instructions, remain inactive.
-3. If a human player expresses a desire to perform an action, do not intervene or take over. Allow the player to engage and enjoy the experience on their own.
+1. Prioritize current dishes.
+2. Prioritize efficiency.
 """
 
 example_history.append(("system", message))
@@ -77,39 +75,7 @@ for idx, exp in enumerate(example):
 interaction_history = []
 
 
-audio_queue = queue.Queue()
-mic = WhisperMic(model='base', english=True, device='cuda')
-def listen():
-    while True:
-        result = mic.listen()
-        type_in_chat(result)
-        # audio_queue.put_nowait(result) 
-        env.set_human_action(result)
-x = threading.Thread(target=listen, daemon=True).start()
-
-
-def type_in_chat(message):
-    pyautogui.press('t')
-    time.sleep(0.1)
-    pyautogui.press('backspace')
-    pyautogui.write(message)
-    time.sleep(0.8)
-    pyautogui.press('enter')
-
 while True:
-    # get everything from the audio queue
-    # human_instructiosn = []
-    # while not audio_queue.empty():
-    #     human_instructiosn.append(audio_queue.get(False))
-    
-    # total_instr = ""
-    # for instr in human_instructiosn:
-    #     total_instr += instr + " "
-    
-    # if total_instr != "":
-    #     type_in_chat(total_instr)
-    
-    # env.set_human_action(total_instr)
     prompt = env.all_state()
     interaction_history.append(("user", prompt))
 
@@ -124,9 +90,3 @@ while True:
     interaction_history.append(("assistant", plan))
     plan = eval(plan)
     env.step(plan)
-
-    
-
-    
-    
-

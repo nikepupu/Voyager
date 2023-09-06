@@ -3,45 +3,11 @@ from typing import List
 import time
 import random
 import time
-import pyautogui
-import threading
-from whisper_mic.whisper_mic import WhisperMic
-import queue
-import threading
-import time
+
+from collections import Counter
+
 import os
-import azure.cognitiveservices.speech as speechsdk
-from pynput.keyboard import Key, Controller
-import speech_recognition as sr
-import pynput
 
-stop_recognition = threading.Event()
-my_keyboard = Controller()
-
-
-def recognize_from_microphone():
-        # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
-        speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
-        speech_config.speech_recognition_language="en-US"
-
-        audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
-        speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
-
-        print("Speak into your microphone.")
-        speech_recognition_result = speech_recognizer.recognize_once_async().get()
-
-        if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
-            print("Recognized: {}".format(speech_recognition_result.text))
-            return speech_recognition_result.text
-        elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
-            print("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
-        elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
-            cancellation_details = speech_recognition_result.cancellation_details
-            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
-            if cancellation_details.reason == speechsdk.CancellationReason.Error:
-                print("Error details: {}".format(cancellation_details.error_details))
-                print("Did you set the speech resource key and region values?")
-        return None
 
 class MultiVoyager():
     def __init__(self, mc_port, openai_api_key, username='nikepupu9') -> None:
@@ -94,68 +60,26 @@ class MultiVoyager():
         self._last_event = self.env.step_manuual(code = "await updateEntities(bot1, '2');") 
                             
         self.feedback = ""
-        self.human_dialogs_history = ""
 
         self.task_list = ['cooked_chicken', 'cooked_mutton']
 
-        self.rng = random.Random(1234)
+        self.rng = random.Random(123)
         self.goals = [(self.rng.choice(self.task_list), 12)]
         self.accomplished_goals = []
         self.failed_goals = []
 
         self.last_actions = []
 
-        self.goal = ''
-
         
-
-    def goal_checking_prompt(self):
-        prompt = "Player Action: {self.huamn_actions} \n"
-        prompt += f"t = {self.time_step} \n"
-        for i in range(2):
-            prompt += f"agent {i+1} inventory :\n"
-            prompt += str(self._last_event[f'bot{i+1}'][-1][1]["inventory"])
-            prompt += "\n"
-            prompt += f"agent {i+1} sourrending :\n"
-            voxels = [item for item in self._last_event[f'bot{i+1}'][-1][1]["voxels"] if isinstance(item, list)]
-            
-            prompt += voxels
-            prompt += "\n"
-            prompt += f"agent {i+1} sourrending entities :\n"
-            prompt += str(self._last_event[f'bot{i+1}'][-1][1]['status']["entities"])
-            prompt += "\n"
-
-        prompt += f"player inventory :\n"
-        for key, value in self._last_event['bot3'][-1][1]["nearbyChests"].items():
-            prompt += f" {value}"
-
-        prompt += '\n'
-        prompt += f"kitchen state :\n"
-        prompt += 'Inside furnace : \n'
-
-        for key, value in self._last_event[f'bot{i+1}'][-1][1]["nearbyFurnaces"].items():
-            prompt += f" {value}"
-        prompt += '\n'
-        
-        prompt += 'Inside chest : \n'
-        for key, value in self._last_event[f'bot{i+1}'][-1][1]["nearbyChests"].items():
-            prompt += f" {value}"
-        prompt += '\n'
-        prompt += """ Did the player finish the action '{self.human_actions}' ? \n
-        Pay attention to player inventory. Answer yes or no. Do not include reasoning. \n"""
-        return prompt
 
     def all_state(self):
         
         # print(self._last_event)
-        # prompt = 'current dishes:   \n'
-        # for goal in self.goals:
-        #     prompt += f"{goal[0]}: remaning time: {goal[1]} \n"
+        prompt = 'current dishes:   \n'
+        for goal in self.goals:
+            prompt += f"{goal[0]}: remaning time: {goal[1]} \n"
         
-        # for goal in self.goals:
-        #     prompt += f"{goal[0]} \n"
 
-        prompt = f"Human Current Instruction: {self.goal} \n"
         prompt += f"Environment Feedback : {self.feedback} \n"
         prompt += f"t = {self.time_step} \n\n"
         for i in range(2):
@@ -170,38 +94,30 @@ class MultiVoyager():
             prompt += str(self._last_event[f'bot{i+1}'][-1][1]['status']["entities"])
             prompt += "\n"
 
-        prompt += f"player inventory :\n"
-        for key, value in self._last_event['bot3'][-1][1]["nearbyChests"].items():
-            prompt += f" {value}"
+        # prompt += f"player inventory :\n"
+        # for key, value in self._last_event['bot3'][-1][1]["nearbyChests"].items():
+        #     prompt += f" {value}"
 
         prompt += '\n'
         prompt += f"kitchen state :\n"
         prompt += 'Inside furnace : \n'
 
-        for key, value in self._last_event[f'bot{i+1}'][-1][1]["nearbyFurnaces"].items():
+        for key, value in self._last_event[f'bot2'][-1][1]["nearbyFurnaces"].items():
             prompt += f" {value}"
         prompt += '\n'
         
         prompt += 'Inside chest : \n'
-        for key, value in self._last_event[f'bot{i+1}'][-1][1]["nearbyChests"].items():
+        for key, value in self._last_event[f'bot2'][-1][1]["nearbyChests"].items():
             prompt += f" {value}"
-
         prompt += '\n'
-        prompt += f'Human Instructions Hisotry : {self.human_dialogs_history}\n'
         prompt += f'Agent Actions: \n'
         return prompt
     
-    def set_human_action(self, human_actions = ""):
-        self.goal = human_actions
-        self.human_dialogs_history += " " + human_actions
-    
-    def clear_human_action(self):
-        self.human_actions = ""
 
     def step(self, actions):
             
-        # if self.time_step  % 12 == 0 and self.time_step != 0:
-        #     self.goals.append((self.rng.choice(self.task_list), 12))
+        if self.time_step  % 10 == 0 and self.time_step != 0:
+            self.goals.append((self.rng.choice(self.task_list), 12))
 
         self.feedback = ""
         def construct_action_str(actions):
@@ -230,137 +146,91 @@ class MultiVoyager():
             if event[0] == 'onChat':
                 message = ' For bot2 ' +   event[1]['onChat']
                 self.feedback += message
-        # inventory = self._last_event[f'bot1'][-1][1]["inventory"]
-        # for goal in self.goals:
-        #     if goal[0] in inventory:
-        #         accomplished_counter = Counter(self.accomplished_goals)
-        #         inventory_counter = Counter(inventory)
-        #         if accomplished_counter[goal] < inventory_counter[goal]:
+        
 
-        #             self.accomplished_goals.append(goal)
-        #         self.goals.remove(goal)
+        # assuming one chest
+        for key, value in self._last_event['bot2'][-1][1]["nearbyChests"].items():
+            chest = value
+            break
+        
+        # print('inside chest: ', chest)
 
-        # self.goals = [(goal[0], goal[1]-1) for goal in self.goals]
-        # expired_goals = [goal for goal in self.goals if goal[1] == 0]
-        # self.failed_goals += expired_goals
-        # self.goals = [goal for goal in self.goals if goal[1] > 0]
+        # Sort the goals based on time
+        self.goals.sort(key=lambda x: x[1])
+        # print('goals: ', self.goals)
+        remaining_goals = self.goals.copy()  # Create a copy to iterate over
 
-        # print(self._last_event)
+        for goal in remaining_goals:
+            item, _ = goal
+            if item in chest:
+                accomplished_counter = Counter(self.accomplished_goals)
+                if accomplished_counter[item] < chest[item]:
+                    self.accomplished_goals.append(item)
+                    self.goals.remove(goal)
+
+        self.goals = [(goal[0], goal[1]-1) for goal in self.goals]
+        expired_goals = [goal[0] for goal in self.goals if goal[1] == 0]
+        self.failed_goals += expired_goals
+        self.goals = [goal for goal in self.goals if goal[1] > 0]
+
+        # print('accomplished goals: ', self.accomplished_goals)
         
         return self.all_state()
-    
-def type_in_chat(message):  
-    pyautogui.press('t')
-    pyautogui.press('backspace')
-    pyautogui.write(message, interval=0.00)
-    time.sleep(0.2)
-    pyautogui.press('enter')
 
-def recognize_from_microphone():
-    # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
-    speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
-    speech_config.speech_recognition_language="en-US"
-
-    audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
-    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
-
-    print("Speak into your microphone.")
-    while not stop_recognition.is_set():
-        speech_recognition_result = speech_recognizer.recognize_once_async().get()
-
-        if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
-            print("Recognized: {}".format(speech_recognition_result.text))
-            type_in_chat(speech_recognition_result.text)
-            env.set_human_action(speech_recognition_result.text)
-            return speech_recognition_result.text
-        elif speech_recognition_result.reason == speechsdk.ResultReason.NoMatch:
-            print("No speech could be recognized: {}".format(speech_recognition_result.no_match_details))
-        elif speech_recognition_result.reason == speechsdk.ResultReason.Canceled:
-            cancellation_details = speech_recognition_result.cancellation_details
-            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
-            if cancellation_details.reason == speechsdk.CancellationReason.Error:
-                print("Error details: {}".format(cancellation_details.error_details))
-                print("Did you set the speech resource key and region values?")
-
-        return None
-  
-def on_press(key):
-    global stop_recognition
-    if key == Key.delete:
-        stop_recognition.clear()
-        recognize_from_microphone()
-
-def on_release(key):
-    global stop_recognition
-    if key == Key.delete:
-        stop_recognition.set()
-
-
-def start_listener():
-    with pynput.keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-        listener.join()
 
 if __name__ == '__main__':
     
 
     env = MultiVoyager(39357, 'sk-x')
-
-    # Start the listener in a separate thread
-    listener_thread = threading.Thread(target=start_listener)
-    listener_thread.start()
     
     def case1():
         state = env.all_state()
         print(state) 
-        print("Agent Actions: \n")
         print('***')
         actions = ["goto(bot1, 'oak_log')", "goto(bot2, 'chicken')"]
         state = env.step(actions)
         print(actions)
         print('***')
         print(state)
-        print("Agent Actions: \n")
         print('***')
         actions = ["mineBlock(bot1, 'oak_log')", "killMob(bot2, 'chicken')"]
         state = env.step(actions)
         print(actions)
         print('***')
         print(state)
-        print("Agent Actions: \n")
         print('***')
         actions = ["goto(bot1, 'furnace')", "goto(bot2, 'furnace')"]
         state = env.step(actions)
         print(actions)
         print('***')
         print(state)
-        print("Agent Actions: \n")
         print('***')
         actions = ["putFuelFurnace(bot1, 'oak_log')", "putItemFurnace(bot2, 'chicken')"]
         state = env.step(actions)
         print(actions)
         print('***')
         print(state)
-        print("Agent Actions: \n")
         print('***')
         actions = ["takeOutFurnace(bot1)"]
         state = env.step(actions)
         print(actions)
         print('***')
         print(state)
-        print("Agent Actions: \n")
         print('***')
         actions = ["goto(bot1, 'chest')"]
         state = env.step(actions)
         print(actions)
         print('***')
         print(state)
-        print("Agent Actions: \n")
         print('***')
         actions = ["putInChest(bot1, 'cooked_chicken')"]
         state = env.step(actions)
         print(actions)
         print('***')
         print(state)
+        print('***')
+        actions = ["goto(bot1, 'oak_log')"]
+        state = env.step(actions)
         print('***')
 
     def case3():
@@ -512,4 +382,4 @@ if __name__ == '__main__':
         print(state)
         print('***')
 
-    case3()
+    case1()
