@@ -85,8 +85,6 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             })
         else:
             raise NotImplementedError
-    # openai.organization = 'org-m2iXhDFphTS3ttoq3L6gNNA0'
-    # openai.api_key = 
 
     total_trials = 0
     while True:

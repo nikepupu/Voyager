@@ -308,7 +308,7 @@ def start_listener():
 if __name__ == '__main__':
     
 
-    env = MultiVoyager(54230, 'sk-x')
+    env = MultiVoyager(63605, 'sk-x')
 
     # Start the listener in a separate thread
     listener_thread = threading.Thread(target=start_listener)
@@ -370,9 +370,9 @@ if __name__ == '__main__':
 
     def case3():
         state = env.all_state()
-        time.sleep(20.0)
+        time.sleep(10.0)
         actions = [ "goto(bot2, 'chicken')", "goto(bot1, 'sheep')"]
-        env.set_human_action("Let's cook chicken. I will get the oak_log")
+        env.set_human_action("Let's cook chicken and mutton. I will get the oak_log")
         state = env.step(actions)
         
         actions = [ "killMob(bot2, 'chicken')", "killMob(bot1, 'sheep')"]
