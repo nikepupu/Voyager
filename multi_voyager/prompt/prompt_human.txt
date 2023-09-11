@@ -31,15 +31,15 @@ Human Current Instruction:
 t = 0 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 18.027756377319946], ['furnace', 17.69180601295413], ['oak_log', 22.47220505424423]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 7.0710678118654755, 'chicken': 8.602325267042627}
 agent 2 inventory :
 {}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 14.142135623730951], ['furnace', 16.97056274847714], ['oak_log', 13.416407864998739]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 20.615528128088304, 'chicken': 21.18962010041709}
 player inventory :
  {}
@@ -48,7 +48,7 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Instructions Hisotry :
+Human Instructions History :
 
 Agent Actions: 
 
@@ -59,15 +59,15 @@ Human Current Instruction: Cook some chicken.
 t = 1 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 18.027756377319946], ['furnace', 17.69180601295413], ['oak_log', 22.47220505424423]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 7.0710678118654755, 'chicken': 8.602325267042627}
 agent 2 inventory :
 {}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 14.142135623730951], ['furnace', 16.97056274847714], ['oak_log', 13.416407864998739]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 20.615528128088304, 'chicken': 21.18962010041709}
 player inventory :
  {}
@@ -76,7 +76,7 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Instructions Hisotry : Cook some chicken.
+Human Instructions History : Cook some chicken.
 
 Agent Actions: 
 
@@ -87,15 +87,15 @@ Human Current Instruction: Cook some chicken.
 t = 2 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 1], ['furnace', 3.605551275463989], ['oak_log', 3.605551275463989]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 12.043936631484605, 'chicken': 11.394240489744817}
 agent 2 inventory :
 {}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 9.486832980505138], ['furnace', 8.602325267042627], ['oak_log', 13.92838827718412]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 2.3011390988046623, 'chicken': 1.138086618868499}
 player inventory :
  {}
@@ -104,26 +104,26 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Instructions Hisotry : Cook some chicken.
+Human Instructions history : Let's keep cooking chicken.
 
 Agent Actions: 
 
 ***
 ["mineBlock(bot1, 'oak_log')", "killMob(bot2, 'chicken')"]
 ***
-Human Current Instruction: cooked_chicken
+Human Current Instruction: Let's keep cooking chicken.
 t = 3 
 agent 1 inventory :
 {'oak_log': 1}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 3.605551275463989], ['furnace', 5]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.7648230602334}
 agent 2 inventory :
 {'feather': 1, 'chicken': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 9.486832980505138], ['furnace', 8.602325267042627]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 2.3011390988046623}
 player inventory :
  {}
@@ -132,26 +132,26 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Instructions Hisotry : Cook some chicken.
+Human Instructions history : Let's keep cooking chicken.
 
 Agent Actions: 
 
 ***
 ["goto(bot1, 'furnace')", "goto(bot2, 'furnace')"]
 ***
-Human Current Instruction: Cook some chicken.
+Human Current Instruction: Let's keep cooking chicken.
 t = 4 
 agent 1 inventory :
 {'oak_log': 1}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1, 'chicken': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -160,26 +160,26 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Instructions Hisotry : Cook some chicken.
+Human Instructions history : Let's keep cooking chicken.
 
 Agent Actions: 
 
 ***
 ["putFuelFurnace(bot1, 'oak_log')", "putItemFurnace(bot2, 'chicken')"]
 ***
-Human Current Instruction: Cook some chicken.
+Human Current Instruction: Let's keep cooking chicken.
 t = 5 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -188,26 +188,26 @@ Inside furnace :
  ['cooked_chicken']
 Inside chest : 
  []
-Human Instructions Hisotry : Cook some chicken.
+Human Instructions history : Let's keep cooking chicken.
 
 Agent Actions: 
 
 ***
 ['takeOutFurnace(bot1)']
 ***
-Human Current Instruction: Cook some chicken.
+Human Current Instruction: Let's keep cooking chicken.
 t = 6 
 agent 1 inventory :
 {'cooked_chicken': 1}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -216,26 +216,26 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Instructions Hisotry : Cook some chicken.
+Human Instructions history : Let's keep cooking chicken.
 
 Agent Actions: 
 
 ***
 ["goto(bot1, 'chest')"]
 ***
-Human Current Instruction: Cook some chicken.
+Human Current Instruction: Let's keep cooking chicken.
 t = 7 
 agent 1 inventory :
 {'cooked_chicken': 1}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -244,26 +244,26 @@ Inside furnace :
  []
 Inside chest : 
  []
-Human Instructions Hisotry : Cook some chicken.
+Human Instructions history : Let's keep cooking chicken.
 
 Agent Actions: 
 
 ***
 ["putInChest(bot1, 'cooked_chicken')"]
 ***
-Human Current Instruction: Cook some chicken.
+Human Current Instruction: Let's keep cooking chicken.
 t = 8 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -284,15 +284,15 @@ Human Current Instruction: Let's cook mutton.
 t = 9 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 18.027756377319946], ['furnace', 17.69180601295413], ['oak_log', 22.47220505424423]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 7.0710678118654755, 'chicken': 8.602325267042627}
 agent 2 inventory :
 {}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 14.142135623730951], ['furnace', 16.97056274847714], ['oak_log', 13.416407864998739]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 20.615528128088304, 'chicken': 21.18962010041709}
 player inventory :
  {}
@@ -301,7 +301,7 @@ Inside furnace :
  []
 Inside chest : 
  {'cooked_chicken': 1}
-Human Instructions Hisotry : Cook some chicken. Let's cook mutton.
+Human Instructions history : Let's keep cooking chicken. Let's cook mutton.
 
 Agent Actions: 
 
@@ -312,15 +312,15 @@ Human Current Instruction: Let's cook mutton.
 t = 10 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 1], ['furnace', 3.605551275463989], ['oak_log', 3.605551275463989]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 12.043936631484605, 'chicken': 11.394240489744817}
 agent 2 inventory :
 {}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 9.486832980505138], ['furnace', 8.602325267042627], ['oak_log', 13.92838827718412]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 2.3011390988046623, 'chicken': 1.138086618868499}
 player inventory :
  {}
@@ -329,7 +329,7 @@ Inside furnace :
  []
 Inside chest : 
  {'cooked_chicken': 1}
-Human Instructions Hisotry : Cook some chicken. Let's cook mutton.
+Human Instructions history : Let's keep cooking chicken. Let's cook mutton.
 
 Agent Actions: 
 
@@ -340,15 +340,15 @@ Human Current Instruction: Let's cook mutton.
 t = 11 
 agent 1 inventory :
 {'oak_log': 1}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 3.605551275463989], ['furnace', 5]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.7648230602334}
 agent 2 inventory :
 {'feather': 1, 'mutton': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 9.486832980505138], ['furnace', 8.602325267042627]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 2.3011390988046623}
 player inventory :
  {}
@@ -368,15 +368,15 @@ Human Current Instruction: Let's cook mutton.
 t = 12 
 agent 1 inventory :
 {'oak_log': 1}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1, 'mutton': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -385,7 +385,7 @@ Inside furnace :
  []
 Inside chest : 
  {'cooked_chicken': 1}
-Human Instructions Hisotry : Cook some chicken. Let's cook mutton.
+Human Instructions history : Let's keep cooking chicken. Let's cook mutton.
 
 Agent Actions: 
 
@@ -396,15 +396,15 @@ Human Current Instruction: Let's cook mutton.
 t = 13 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -413,7 +413,7 @@ Inside furnace :
  ['cooked_mutton']
 Inside chest : 
  {'cooked_chicken': 1}
-Human Instructions Hisotry : Cook some chicken. Let's cook mutton. 
+Human Instructions history : Let's keep cooking chicken. Let's cook mutton. 
 
 Agent Actions: 
 
@@ -424,15 +424,15 @@ Human Current Instruction: Let's cook mutton.
 t = 14 
 agent 1 inventory :
 {'cooked_mutton': 1}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -441,7 +441,7 @@ Inside furnace :
  []
 Inside chest : 
  {'cooked_chicken': 1}
-Human Instructions Hisotry : Cook some chicken. Let's cook mutton. 
+Human Instructions history : Let's keep cooking chicken. Let's cook mutton. 
 
 Agent Actions: 
 
@@ -452,15 +452,15 @@ Human Current Instruction: Let's cook mutton.
 t = 15 
 agent 1 inventory :
 {'cooked_mutton': 1}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -469,7 +469,7 @@ Inside furnace :
  []
 Inside chest : 
  {'cooked_chicken': 1}
-Human Instructions Hisotry : Cook some chicken. Let's cook mutton.
+Human Instructions history : Let's keep cooking chicken. Let's cook mutton.
 
 Agent Actions: 
 
@@ -480,15 +480,15 @@ Human Current Instruction: Let's cook mutton.
 t = 16 
 agent 1 inventory :
 {}
-agent 1 sourrending :
+agent 1 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 2.8284271247461903], ['furnace', 4], ['oak_log', 2]]
-agent 1 sourrending entities :
+agent 1 surrounding entities :
 {'sheep': 14.052570740896419, 'chicken': 13.170981186116865}
 agent 2 inventory :
 {'feather': 1}
-agent 2 sourrending :
+agent 2 surrounding :
 ['bedrock', 'dirt', 'grass_block', ['chest', 4], ['furnace', 2.8284271247461903], ['oak_log', 8.246211251235321]]
-agent 2 sourrending entities :
+agent 2 surrounding entities :
 {'sheep': 7.810249675906654, 'chicken': 6.708203932499369}
 player inventory :
  {}
@@ -497,4 +497,4 @@ Inside furnace :
  []
 Inside chest : 
  {'cooked_chicken': 1, 'cooked_mutton': 1}
-Human Instructions Hisotry : Cook some chicken. Let's cook mutton.
+Human Instructions history : Let's keep cooking chicken. Let's cook mutton.

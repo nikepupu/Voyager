@@ -5,28 +5,25 @@ import random
 import time
 import pyautogui
 import threading
-from whisper_mic.whisper_mic import WhisperMic
 import queue
 import threading
 import time
 import os
 import azure.cognitiveservices.speech as speechsdk
 from pynput.keyboard import Key, Controller
-import speech_recognition as sr
 import pynput
 
 stop_recognition = threading.Event()
 my_keyboard = Controller()
 
+# This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
+speech_config.speech_recognition_language="en-US"
+
+audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
 
 def recognize_from_microphone():
-        # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
-        speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
-        speech_config.speech_recognition_language="en-US"
-
-        audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
-        speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
-
         print("Speak into your microphone.")
         speech_recognition_result = speech_recognizer.recognize_once_async().get()
 
@@ -118,12 +115,12 @@ class MultiVoyager():
             prompt += f"agent {i+1} inventory :\n"
             prompt += str(self._last_event[f'bot{i+1}'][-1][1]["inventory"])
             prompt += "\n"
-            prompt += f"agent {i+1} sourrending :\n"
+            prompt += f"agent {i+1} surrounding :\n"
             voxels = [item for item in self._last_event[f'bot{i+1}'][-1][1]["voxels"] if isinstance(item, list)]
             
             prompt += voxels
             prompt += "\n"
-            prompt += f"agent {i+1} sourrending entities :\n"
+            prompt += f"agent {i+1} surrounding entities :\n"
             prompt += str(self._last_event[f'bot{i+1}'][-1][1]['status']["entities"])
             prompt += "\n"
 
@@ -164,11 +161,11 @@ class MultiVoyager():
             prompt += f"agent {i+1} inventory :\n"
             prompt += str(self._last_event[f'bot{i+1}'][-1][1]["inventory"])
             prompt += "\n"
-            prompt += f"agent {i+1} sourrending :\n"
+            prompt += f"agent {i+1} surrounding :\n"
             voxels = [item for item in self._last_event[f'bot{i+1}'][-1][1]["voxels"] if isinstance(item, list)]
             prompt += str(voxels)
             prompt += "\n"
-            prompt += f"agent {i+1} sourrending entities :\n"
+            prompt += f"agent {i+1} surrounding entities :\n"
             prompt += str(self._last_event[f'bot{i+1}'][-1][1]['status']["entities"])
             prompt += "\n"
 
@@ -311,7 +308,7 @@ def start_listener():
 if __name__ == '__main__':
     
 
-    env = MultiVoyager(39357, 'sk-x')
+    env = MultiVoyager(54230, 'sk-x')
 
     # Start the listener in a separate thread
     listener_thread = threading.Thread(target=start_listener)

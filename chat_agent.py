@@ -17,8 +17,10 @@ def type_in_chat(message):
     pyautogui.press('t')
     pyautogui.press('backspace')
     pyautogui.write(message, interval=0.00)
-    time.sleep(0.2)
+    time.sleep(0.3)
     pyautogui.press('enter')
+    time.sleep(0.1)
+    pyautogui.press('esc')
 
 def recognize_from_microphone():
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
@@ -53,19 +55,16 @@ def on_press(key):
     if key == Key.delete:
         stop_recognition.clear()
         recognize_from_microphone()
-
-def on_release(key):
-    global stop_recognition
-    if key == Key.delete:
         stop_recognition.set()
 
+def on_release(key):
+    pass
 
 def start_listener():
     with pynput.keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
         listener.join()
 def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
     # history = [('user', context)] + history    
-
 
     chat_history = []
     for i in history:
@@ -87,7 +86,7 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
         else:
             raise NotImplementedError
     # openai.organization = 'org-m2iXhDFphTS3ttoq3L6gNNA0'
-    openai.api_key = 
+    # openai.api_key = 
 
     total_trials = 0
     while True:
@@ -107,7 +106,7 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             time.sleep(0.1)
     return response.choices[0].message.content
 
-env = MultiVoyager(37879, 'sk-x')
+env = MultiVoyager(63605, 'sk-x')
 listener_thread = threading.Thread(target=start_listener)
 listener_thread.start()
 
@@ -131,6 +130,7 @@ for idx, exp in enumerate(example):
 
 interaction_history = []
 
+print('recording start')
 
 while True:
         if env.human_actions_buffer or env.human_dialogs_history:
@@ -149,9 +149,3 @@ while True:
             interaction_history.append(("assistant", plan))
             plan = eval(plan)
             env.step(plan)
-
-    
-
-    
-    
-
