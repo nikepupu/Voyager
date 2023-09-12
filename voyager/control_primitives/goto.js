@@ -8,7 +8,7 @@ async function goto(bot, locationName) {
             maxDistance: 48,
         });
         
-    } else if (['sheep', 'chicken', 'pig'].includes(locationName)) {
+    } else if (['sheep', 'chicken', 'pig', 'cow'].includes(locationName)) {
         block = bot.nearestEntity(
             (entity) =>
                 entity.name === locationName && // Change mobName to locationName
