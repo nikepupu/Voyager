@@ -3,7 +3,7 @@ from voyager import Voyager
 # You can also use mc_port instead of azure_login, but azure_login is highly recommended
 # check command: /data get entity bot3000 Inventory
 openai_api_key = "sk-xxx"
-port = 44401
+port = 36677
 voyager1 = Voyager(
     mc_port=port,
     openai_api_key=openai_api_key,

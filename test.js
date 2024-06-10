@@ -90,14 +90,14 @@ function onDisconnect(message) {
 
 const bot1 = mineflayer.createBot({
   host: 'localhost',     // Minecraft server IP or address
-  port: 45191,           // Optional, default is 25565
+  port: 36677,           // Optional, default is 25565
   username: 'Bot1', // Minecraft username of the bot
   // password: 'password',   // If the server is online-mode
 });
 
 const bot2 = mineflayer.createBot({
     host: 'localhost',     // Minecraft server IP or address
-    port: 45191,           // Optional, default is 25565
+    port: 36677,           // Optional, default is 25565
     username: 'Bot2', // Minecraft username of the bot
     // password: 'password',   // If the server is online-mode
   });

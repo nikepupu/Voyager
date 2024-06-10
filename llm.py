@@ -6,6 +6,9 @@ import time
 import requests
 import openai
 
+from openai import OpenAI
+client = OpenAI()
+
 key_id = 0
 def rules(env, notes=True):
     prompt = """
@@ -125,15 +128,8 @@ def prepend_history(history, add, role='user', verbose=True):
     return history
 
 def next_key():
-    global key_id
-    with open('./key.txt', 'r') as f:
-        all_keys = f.read().split('\n')
-    # all_keys = open('./key.txt', 'r').read().split('\n')
-    num = len(all_keys)
-    key_id += 1
-
-    if key_id >= num:
-        key_id -= num
+    openai_key = os.getenv('OPENAI_KEY')
+    openai.api_key = openai_key
 
 
 def completion_llm(prompt, temperature=0, max_tokens=100):
@@ -142,7 +138,7 @@ def completion_llm(prompt, temperature=0, max_tokens=100):
     total_trials = 0
     while True:
         try:
-            response = openai.Completion.create(
+            response = client.chat.completions.create(
                 model='text-davinci-003',
                 prompt=prompt,
                 temperature=temperature,
@@ -186,7 +182,7 @@ def chat_llm_vicuna(history, temperature=0, max_tokens=100):
 
 def chat_azure(history, temperature, max_tokens):
     url = 'https://gcrgpt4aoai4c.openai.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2023-06-01-preview'
-    api_key = '54f5ce9cb1f24b16ad84562d55bff74e'
+    api_key = ''
     headers = {'Content-Type': 'application/json', 'api-key': api_key}  
     chat_history = []
     for i in history:
@@ -248,14 +244,12 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
             })
         else:
             raise NotImplementedError
-    # openai.organization = 'org-GpfWusPiQUliNZaINM5nWfUV' # BIGAI
-    # openai.organization = 'org-kYNMs2XaPkrxJd6xunExik9B' # jxma
 
     total_trials = 0
     while True:
 
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model = model,
                 messages=chat_history,
                 temperature=temperature,

@@ -115,12 +115,12 @@ app.post("/start", (req, res) => {
         const tool = require("mineflayer-tool").plugin;
         const collectBlock = require("mineflayer-collectblock").plugin;
         const pvp = require("mineflayer-pvp").plugin;
-        const minecraftHawkEye = require("minecrafthawkeye");
+        // const minecraftHawkEye = require("minecrafthawkeye");
         bot1.loadPlugin(pathfinder);
         bot1.loadPlugin(tool);
         bot1.loadPlugin(collectBlock);
         bot1.loadPlugin(pvp);
-        bot1.loadPlugin(minecraftHawkEye);
+        // bot1.loadPlugin(minecraftHawkEye);
 
         obs.inject(bot1, [
             OnChat,
@@ -148,7 +148,7 @@ app.post("/start", (req, res) => {
         bot2.loadPlugin(tool);
         bot2.loadPlugin(collectBlock);
         bot2.loadPlugin(pvp);
-        bot2.loadPlugin(minecraftHawkEye);
+        // bot2.loadPlugin(minecraftHawkEye);
 
         obs.inject(bot2, [
             OnChat,
@@ -171,7 +171,7 @@ app.post("/start", (req, res) => {
         bot3.loadPlugin(tool);
         bot3.loadPlugin(collectBlock);
         bot3.loadPlugin(pvp);
-        bot3.loadPlugin(minecraftHawkEye);
+        // bot3.loadPlugin(minecraftHawkEye);
         obs.inject(bot3, [
             OnChat,
             OnError,

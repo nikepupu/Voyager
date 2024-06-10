@@ -1,22 +1,21 @@
-# Voyager: An Open-Ended Embodied Agent with Large Language Models
-<div align="center">
+# MindAgent Emerging Gaming Interaction
 
-[[Website]](https://voyager.minedojo.org/)
-[[Arxiv]](https://arxiv.org/abs/2305.16291)
-[[PDF]](https://voyager.minedojo.org/assets/documents/voyager.pdf)
-[[Tweet]](https://twitter.com/DrJimFan/status/1662115266933972993?s=20)
+## Setup Map
+copy  Victoria House Folder under .minecraft/save
 
-[![Python Version](https://img.shields.io/badge/Python-3.9-blue.svg)](https://github.com/MineDojo/Voyager)
-[![GitHub license](https://img.shields.io/github/license/MineDojo/Voyager)](https://github.com/MineDojo/Voyager/blob/main/LICENSE)
-______________________________________________________________________
+Then manually load into Minecraft map. 
 
+Open LAN, set allow cheats to on. Then record the port number.
 
-https://github.com/MineDojo/Voyager/assets/25460983/ce29f45b-43a5-4399-8fd8-5dd105fd64f2
+Go to chat_agent.py, modify the port number.
 
-![](images/pull.png)
+Then you can run the code after setting up Voyager (make sure it's the correct port number)
+```bash
+python chat_agent.py --port 36677
+```
 
-
-</div>
+# Setup Voyager
+First follow Voyager to set up the codebase, we include the voyager guide below : 
 
 We introduce Voyager, the first LLM-powered embodied lifelong learning agent
 in Minecraft that continuously explores the world, acquires diverse skills, and
@@ -71,7 +70,7 @@ You need to install fabric mods to support all the features in Voyager. Remember
 
 Follow the instructions in [Fabric Mods Install](installation/fabric_mods_install.md) to install the mods.
 
-# Getting Started
+## Getting Started
 Voyager uses OpenAI's GPT-4 as the language model. You need to have an OpenAI API key to use Voyager. You can get one from [here](https://platform.openai.com/account/api-keys).
 
 After the installation process, you can run Voyager by:
@@ -103,7 +102,7 @@ voyager.learn()
   3. After the world is created, press `Esc` key and press `Open to LAN`.
   4. Select `Allow cheats: ON` and press `Start LAN World`. You will see the bot join the world soon. 
 
-# Resume from a checkpoint during learning
+## Resume from a checkpoint during learning
 
 If you stop the learning process and want to resume from a checkpoint later, you can instantiate Voyager by:
 ```python
@@ -117,7 +116,7 @@ voyager = Voyager(
 )
 ```
 
-# Run Voyager for a specific task with a learned skill library
+## Run Voyager for a specific task with a learned skill library
 
 If you want to run Voyager for a specific task with a learned skill library, you should first pass the skill library directory to Voyager:
 ```python
@@ -145,12 +144,12 @@ voyager.inference(sub_goals=sub_goals)
 
 For all valid skill libraries, see [Learned Skill Libraries](skill_library/README.md).
 
-# FAQ
+## FAQ
 If you have any questions, please check our [FAQ](FAQ.md) first before opening an issue.
 
-# Paper and Citation
+## Paper and Citation
 
-If you find our work useful, please consider citing us! 
+If you find our work useful, please consider citing the following projects! 
 
 ```bibtex
 @article{wang2023voyager,
@@ -158,6 +157,13 @@ If you find our work useful, please consider citing us!
   author  = {Guanzhi Wang and Yuqi Xie and Yunfan Jiang and Ajay Mandlekar and Chaowei Xiao and Yuke Zhu and Linxi Fan and Anima Anandkumar},
   year    = {2023},
   journal = {arXiv preprint arXiv: Arxiv-2305.16291}
+}
+
+@article{gong2023mindagent,
+  title={Mindagent: Emergent gaming interaction},
+  author={Gong, Ran and Huang, Qiuyuan and Ma, Xiaojian and Vo, Hoi and Durante, Zane and Noda, Yusuke and Zheng, Zilong and Zhu, Song-Chun and Terzopoulos, Demetri and Fei-Fei, Li and others},
+  journal={arXiv preprint arXiv:2309.09971},
+  year={2023}
 }
 ```
 

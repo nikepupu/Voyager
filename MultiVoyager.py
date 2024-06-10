@@ -15,7 +15,7 @@ class MultiVoyager():
         self.username = username
         self.agents = []
         self.time_step = 0
-        openai_api_key = "sk-xxx"
+        openai_api_key = openai_api_key
     
         self.env = Voyager(
             mc_port=self.mc_port,
@@ -24,9 +24,9 @@ class MultiVoyager():
             env_wait_ticks=20,
         )
         
+        
         self.env.start()
-        # await bot1.chat('/summon sheep -5 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/sheep/mutton",DeathLootTableSeed:-12345}');
-        # await bot1.chat('/summon chicken -3 -60 -10 {NoAI:1, DeathLootTable:"minecraft:entities/chicken",DeathLootTableSeed:-1234}');
+        print('started ')
         code = """ 
                 await bot1.chat('/gamerule doMobSpawning false');
                 await bot1.chat('/tp @s -235 32 -109');
@@ -35,10 +35,7 @@ class MultiVoyager():
                 await bot1.chat('/kill @e[type=!player]');
                 await bot1.chat('/kill @e[type=item]');  
         """
-        # await bot1.chat('/setblock 2 -60 -2 minecraft:furnace');
-        # await bot1.chat('/setblock 0 -60 0 minecraft:chest');
-        # await bot1.chat('/setblock 2 -60 4 minecraft:oak_log');
-        # await bot1.chat('/fill 20 -60 20 20 -60 20 minecraft:air');  
+        
 
         self.chestx = -217
         self.chesty = 32
@@ -202,8 +199,9 @@ class MultiVoyager():
 
 if __name__ == '__main__':
     
+    openai_api_key = os.environ.get('OPENAI_API_KEY')
+    env = MultiVoyager(36677, openai_api_key)
 
-    env = MultiVoyager(39357, 'sk-x')
     
     def case1():
         state = env.all_state()

@@ -1,13 +1,11 @@
 
 import openai
 import time
-import os
-import sys
+
 from MultiVoyager import MultiVoyager
-import queue
-import threading
-import pyautogui
-from whisper_mic.whisper_mic import WhisperMic
+import argparse
+from openai import OpenAI
+client = OpenAI()
 key_id = 0
 
 def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
@@ -38,7 +36,7 @@ def chat_llm(history, temperature=0, max_tokens=100, model='gpt-4', context=''):
     while True:
 
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model = model,
                 messages=chat_history,
                 temperature=temperature,
@@ -65,42 +63,50 @@ def next_key():
 
     openai.api_key = all_keys[key_id%num] #random.choice(all_keys)
 
-env = MultiVoyager(39357, 'sk-x')
-
-asset_file = './multi_voyager/prompt/prompt.txt'
-example = open(asset_file, 'r').read().split('***\n')
-example_history = []
-message = """ 
-You are allocating two agents to playing a cooking game in Minecraft. Always adhere to the following guidelines:
-
-1. Prioritize current dishes.
-2. Prioritize efficiency.
-"""
-
-example_history.append(("system", message))
-for idx, exp in enumerate(example):
-    if idx % 2 == 0:
-        example_history.append(("user", exp))
-    else:
-        example_history.append(("assistant", exp))
-
-interaction_history = []
 
 
-for _ in range(60):
-    prompt = env.all_state()
-    interaction_history.append(("user", prompt))
+if __name__ == '__main__':
 
-    if len(interaction_history) > 5:
-        interaction_history = interaction_history[2:]
-    print(prompt)
-    full_prompt = example_history + interaction_history
-    plan = chat_llm(full_prompt, temperature=0.0, max_tokens=100, model='gpt-4', context='')
-    print(plan)
-    example_history.append(("assistant", plan))
-    
-    interaction_history.append(("assistant", plan))
-    plan = eval(plan)
-    env.step(plan)
-    print('accomplished tasks: ', env.accomplished_goals)
-    print('failed tasks: ', env.failed_goals)
+    args_parser = argparse.ArgumentParser(description='')
+    args_parser.add_argument('--port', type=int, required=True)
+    args = args_parser.parse_args()
+    port = str(args.port)
+    env = MultiVoyager(port, 'sk-x')
+
+    asset_file = './multi_voyager/prompt/prompt.txt'
+    example = open(asset_file, 'r').read().split('***\n')
+    example_history = []
+    message = """ 
+    You are allocating two agents to playing a cooking game in Minecraft. Always adhere to the following guidelines:
+
+    1. Prioritize current dishes.
+    2. Prioritize efficiency.
+    """
+
+    example_history.append(("system", message))
+    for idx, exp in enumerate(example):
+        if idx % 2 == 0:
+            example_history.append(("user", exp))
+        else:
+            example_history.append(("assistant", exp))
+
+    interaction_history = []
+
+
+    for _ in range(60):
+        prompt = env.all_state()
+        interaction_history.append(("user", prompt))
+
+        if len(interaction_history) > 5:
+            interaction_history = interaction_history[2:]
+        print(prompt)
+        full_prompt = example_history + interaction_history
+        plan = chat_llm(full_prompt, temperature=0.0, max_tokens=100, model='gpt-4', context='')
+        print(plan)
+        example_history.append(("assistant", plan))
+        
+        interaction_history.append(("assistant", plan))
+        plan = eval(plan)
+        env.step(plan)
+        print('accomplished tasks: ', env.accomplished_goals)
+        print('failed tasks: ', env.failed_goals)
