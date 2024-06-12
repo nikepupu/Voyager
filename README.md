@@ -166,5 +166,3 @@ If you find our work useful, please consider citing the following projects!
   year={2023}
 }
 ```
-
-Disclaimer: This project is strictly for research purposes, and not an official product from NVIDIA.
